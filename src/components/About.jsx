@@ -1,8 +1,8 @@
 const About = () => {
   return (
     <div className="bg-[#FAF4ED] font-sans">
-      <div className="container flex justify-center items-center m-auto py-24 gap-8 h-auto flex-wrap md:flex-nowrap">
-        <div className="logo w-[80vw] md:w-[25vw]">
+      <div className="container flex justify-center items-center m-auto py-24 gap-8 h-[70vh] flex-wrap md:flex-nowrap">
+        <div className="logo w-[80vw] md:w-[30vw]">
           <img src="/images/logo.jpg" alt="Logo" className="rounded-3xl" />
         </div>
         <div className="about-content h-auto max-w-[70vw]">

@@ -199,7 +199,7 @@ const ITContent = () => {
             <p className="text-[#403C5C] mb-4 py-4">
               Ace your GATE exams with curated IT resources, including video lectures, expertly crafted notes, and solved PYQs.
             </p>
-            <button className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED]">
+            <button className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] mt-6">
               Click Here
             </button>
           </div>

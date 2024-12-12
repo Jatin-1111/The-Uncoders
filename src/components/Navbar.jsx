@@ -20,7 +20,7 @@ const Navbar = () => {
         closeMobileMenu();
       }
     };
-    
+
     if (mobileMenuVisible) {
       document.addEventListener("click", handleClickOutside);
     }
@@ -98,7 +98,7 @@ const Navbar = () => {
             </li>
             <li>
               <a
-                href="#about"
+                href="/About"
                 onClick={closeMobileMenu}
                 className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
               >
@@ -116,7 +116,7 @@ const Navbar = () => {
             </li>
             <li>
               <a
-                href="/contact"
+                href="/Contact"
                 onClick={closeMobileMenu}
                 className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
               >
@@ -139,7 +139,7 @@ const Navbar = () => {
         </li>
         <li>
           <a
-            href="#about"
+            href="/About"
             className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
           >
             About
@@ -155,7 +155,7 @@ const Navbar = () => {
         </li>
         <li>
           <a
-            href="/contact"
+            href="/Contact"
             className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
           >
             Contact Us

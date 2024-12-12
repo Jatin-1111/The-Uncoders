@@ -4,6 +4,8 @@ import Content from "./components/Content";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ITContent from "./components/ITContent";
+import Contact from "./components/Contact";
+import About from "./components/About";
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/Content" element={<Content />} />
         <Route path="/Content/ITContent" element={<ITContent />} />
+        <Route path="/Contact" element={<Contact />} />
+        <Route path="/About" element={<About />} />
       </Routes>
 
       {/* Footer Component */}
