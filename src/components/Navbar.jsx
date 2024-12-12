@@ -20,7 +20,7 @@ const Navbar = () => {
         closeMobileMenu();
       }
     };
-
+    
     if (mobileMenuVisible) {
       document.addEventListener("click", handleClickOutside);
     }

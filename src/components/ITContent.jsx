@@ -38,7 +38,12 @@ const ITContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF4ED] flex flex-col">
+    <motion.div 
+      className="min-h-screen bg-[#FAF4ED] flex flex-col"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
       {/* Header Section */}
       <div className="flex justify-center items-center flex-col p-8 text-[#403C5C] space-y-5">
         <h2 className="text-4xl md:text-5xl font-bold text-center">IT Content</h2>
@@ -51,7 +56,7 @@ const ITContent = () => {
         </button>
       </div>
 
-      {/* Dialog Box */}
+      {/* Rest of the component remains exactly the same */}
       {showDialog && (
         <motion.div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -210,7 +215,7 @@ const ITContent = () => {
           </div>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
