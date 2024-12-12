@@ -37,12 +37,32 @@ const Navbar = () => {
     exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
   };
 
+  const desktopLinkVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.1, duration: 0.3 },
+    }),
+  };
+
   return (
-    <nav className="bg-[#403C5C] h-[100px] w-full flex justify-between items-center px-6 lg:px-12 shadow-md relative">
+    <motion.nav
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-[#403C5C] h-[100px] w-full flex justify-between items-center px-6 lg:px-12 shadow-md relative"
+    >
       {/* Logo */}
-      <a href="/" className="text-3xl font-extrabold text-[#D6CFE9] font-sans">
+      <motion.a
+        href="/"
+        className="text-3xl font-extrabold text-[#D6CFE9] font-sans"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         EDUSPHERE
-      </a>
+      </motion.a>
 
       {/* Hamburger Icon for Mobile */}
       <button
@@ -76,7 +96,7 @@ const Navbar = () => {
         ></motion.span>
       </button>
 
-      {/* Navigation Links */}
+      {/* Mobile Navigation Links */}
       <AnimatePresence>
         {mobileMenuVisible && (
           <motion.ul
@@ -116,6 +136,15 @@ const Navbar = () => {
             </li>
             <li>
               <a
+                href="/Login"
+                onClick={closeMobileMenu}
+                className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+              >
+                Login
+              </a>
+            </li>
+            <li>
+              <a
                 href="/Contact"
                 onClick={closeMobileMenu}
                 className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
@@ -127,42 +156,32 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      {/* Profile Dropdown for Desktop */}
+      {/* Desktop Navigation Links */}
       <ul className="hidden lg:flex lg:items-center space-x-8 font-semibold text-lg text-[#D6CFE9]">
-        <li>
-          <a
-            href="/"
-            className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+        {[
+          { label: "Home", href: "/" },
+          { label: "About", href: "/About" },
+          { label: "Content", href: "/Content" },
+          { label: "Login", href: "/Login" },
+          { label: "Contact", href: "/Contact" },
+        ].map((link, i) => (
+          <motion.li
+            key={link.href}
+            initial="hidden"
+            animate="visible"
+            custom={i}
+            variants={desktopLinkVariants}
           >
-            Home
-          </a>
-        </li>
-        <li>
-          <a
-            href="/About"
-            className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-          >
-            About
-          </a>
-        </li>
-        <li>
-          <a
-            href="/Content"
-            className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-          >
-            Content
-          </a>
-        </li>
-        <li>
-          <a
-            href="/Contact"
-            className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-          >
-            Contact Us
-          </a>
-        </li>
+            <a
+              href={link.href}
+              className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+            >
+              {link.label}
+            </a>
+          </motion.li>
+        ))}
       </ul>
-    </nav>
+    </motion.nav>
   );
 };
 

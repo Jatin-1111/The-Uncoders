@@ -21,44 +21,39 @@ const About = () => {
     transition: { duration: 0.3, ease: "easeInOut" },
   };
 
-  // const textHover = {
-  //   scale: 1.02,
-  //   transition: { duration: 0.3, ease: "easeInOut" },
-  // };
-
   return (
     <motion.div
-      className="bg-[#FAF4ED] font-sans"
+      className="bg-[#FAF4ED] font-sans px-4 sm:px-6 md:px-8 lg:px-12"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       <motion.div
-        className="container flex justify-center items-center m-auto py-24 gap-8 h-[70vh] flex-wrap md:flex-nowrap"
+        className="container flex flex-col md:flex-row justify-center items-center m-auto py-12 gap-8 min-h-[70vh]"
         variants={itemVariants}
       >
         {/* Logo Section */}
         <motion.div
-          className="logo w-[80vw] md:w-[30vw]"
+          className="logo w-full md:w-[40%] flex justify-center"
           whileHover={logoHover}
         >
-          <img src="/images/logo.jpg" alt="Logo" className="rounded-3xl" />
+          <img
+            src="/images/logo.jpg"
+            alt="Logo"
+            className="rounded-3xl max-w-[300px] md:max-w-full"
+          />
         </motion.div>
 
         {/* About Content */}
         <motion.div
-          className="about-content h-auto max-w-[70vw]"
+          className="about-content max-w-full md:w-[60%] text-center md:text-left"
           variants={itemVariants}
         >
-          <h2
-            className="text-center font-extrabold text-3xl py-4 md:text-left text-[#403C5C]"
-            // whileHover={textHover}
-          >
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#403C5C] py-4">
             About Us
           </h2>
           <motion.p
-            className="text-left text-[#403C5C] w-full md:w-[30vw] font-normal leading-relaxed"
-            // whileHover={textHover}
+            className="text-[#403C5C] font-normal leading-relaxed text-sm sm:text-base md:text-lg"
           >
             At EDUSPHERE, we recognize the difficulties IT students encounter in
             finding reliable study resources. Our platform is committed to
