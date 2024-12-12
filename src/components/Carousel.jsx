@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+
+// Add icons to the FontAwesome library
+library.add(faArrowLeft, faArrowRight);
 
 const Carousel = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
@@ -79,32 +85,38 @@ const Carousel = () => {
       </div>
 
       {/* Navigation Buttons */}
-      <button
-        className="absolute left-5 top-1/2 transform -translate-y-1/2 bg-[#403C5C] bg-opacity-50 text-[#D6CFE9] rounded p-2 hover:bg-[#CBAACB] hover:text-white"
+      <motion.button
+        className="absolute left-5 top-1/2 transform bg-[#403C5C] bg-opacity-60 text-[#D6CFE9] rounded-full w-12 h-12 flex items-center justify-center hover:bg-[#CBAACB] hover:text-white transition-colors"
         onClick={() =>
           moveToSlide(currentIndex === 0 ? slides.length - 2 : currentIndex - 1)
         }
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
       >
-        &lt;
-      </button>
-      <button
-        className="absolute right-5 top-1/2 transform -translate-y-1/2 bg-[#403C5C] bg-opacity-50 text-[#D6CFE9] rounded p-2 hover:bg-[#CBAACB] hover:text-white"
+        <FontAwesomeIcon icon="arrow-left" className="text-2xl" />
+      </motion.button>
+
+      <motion.button
+        className="absolute right-5 top-1/2 transform bg-[#403C5C] bg-opacity-60 text-[#D6CFE9] rounded-full w-12 h-12 flex items-center justify-center hover:bg-[#CBAACB] hover:text-white transition-colors"
         onClick={() =>
           moveToSlide(currentIndex === slides.length - 2 ? 1 : currentIndex + 1)
         }
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
       >
-        &gt;
-      </button>
+        <FontAwesomeIcon icon="arrow-right" className="text-2xl" />
+      </motion.button>
 
       {/* Indicators */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {slides.slice(1, slides.length - 1).map((_, index) => (
-          <div
+          <motion.div
             key={index}
             className={`w-3 h-3 rounded-full ${
               index === currentIndex - 1 ? "bg-[#403C5C]" : "bg-[#CBAACB]"
             }`}
-          ></div>
+            whileHover={{ scale: 1.3 }}
+          ></motion.div>
         ))}
       </div>
     </div>
