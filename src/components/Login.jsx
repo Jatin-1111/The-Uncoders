@@ -4,7 +4,9 @@ import { auth } from "../firebase"; // Import the Firebase auth instance
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Login = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
@@ -12,6 +14,11 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // For Sign-Up only
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the originating page from where the user navigated to login
+  const from = location.state?.from || "/";
 
   const toggleMode = () => {
     setIsSignUpActive((prev) => !prev);
@@ -41,6 +48,20 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert("Signed in successfully!");
+      navigate(from); // Redirect to the page user was originally trying to access
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email to reset password.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent!");
     } catch (err) {
       setError(err.message);
     }
@@ -78,9 +99,13 @@ const Login = () => {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4C1EC]"
               required
             />
-            <a href="#" className="text-sm text-[#5C6BC0] hover:underline">
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-sm text-[#5C6BC0] hover:underline"
+            >
               Forgot Your Password?
-            </a>
+            </button>
             <motion.button
               type="submit"
               whileHover={{ scale: 1.05 }}
