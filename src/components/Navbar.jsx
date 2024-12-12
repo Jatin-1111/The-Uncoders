@@ -13,24 +13,22 @@ const Navbar = () => {
     setMobileMenuVisible(false);
   };
 
-  // Close the menu when clicking outside or on the "X" symbol
+  // Close the menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Only add listener when menu is visible
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         closeMobileMenu();
       }
     };
 
-    // Only add the event listener when the menu is open
     if (mobileMenuVisible) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
-  }, [mobileMenuVisible]); // Add mobileMenuVisible as a dependency
+  }, [mobileMenuVisible]);
 
   // Framer Motion variants for the mobile menu
   const menuVariants = {
@@ -48,7 +46,10 @@ const Navbar = () => {
 
       {/* Hamburger Icon for Mobile */}
       <button
-        onClick={toggleMobileMenu}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent click propagation for toggle
+          toggleMobileMenu();
+        }}
         className="lg:hidden flex flex-col justify-between w-6 h-5 relative z-50"
         aria-label="Toggle Menu"
       >
