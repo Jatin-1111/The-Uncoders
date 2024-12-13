@@ -185,68 +185,66 @@ const Navbar = () => {
             exit="exit"
             variants={menuVariants}
           >
-            <li>
-              <a
-                href="/"
-                onClick={closeMobileMenu}
-                className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+            {[
+              { label: "Home", href: "/" },
+              { label: "About", href: "/About" },
+              { label: "Content", action: handleContentClick },
+              { label: "Contact", href: "/Contact" },
+            ].map((item, index) => (
+              <motion.li
+                key={item.label}
+                initial="hidden"
+                animate="visible"
+                custom={index}
+                variants={desktopLinkVariants}
+                className="flex justify-center items-center"
               >
-                Home
-              </a>
-            </li>
-            <li>
-              <a
-                href="/About"
-                onClick={closeMobileMenu}
-                className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-              >
-                About
-              </a>
-            </li>
-            <li>
-              <button
-                onClick={() => {
-                  closeMobileMenu();
-                  handleContentClick();
-                }}
-                className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-              >
-                Content
-              </button>
-            </li>
-            <li>
-              <a
-                href="/Contact"
-                onClick={closeMobileMenu}
-                className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-              >
-                Contact
-              </a>
-            </li>
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    onClick={closeMobileMenu}
+                    className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => {
+                      closeMobileMenu();
+                      item.action();
+                    }}
+                    className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+                  >
+                    {item.label}
+                  </button>
+                )}
+              </motion.li>
+            ))}
           </motion.ul>
         )}
       </AnimatePresence>
 
       {/* Desktop Navigation Links */}
       <ul className="hidden lg:flex lg:items-center space-x-8 font-semibold text-lg text-[#D6CFE9]">
-        {[{ label: "Home", href: "/" }, { label: "About", href: "/About" }].map(
-          (link, i) => (
-            <motion.li
-              key={link.href}
-              initial="hidden"
-              animate="visible"
-              custom={i}
-              variants={desktopLinkVariants}
+        {[
+          { label: "Home", href: "/" },
+          { label: "About", href: "/About" },
+        ].map((link, i) => (
+          <motion.li
+            key={link.href}
+            initial="hidden"
+            animate="visible"
+            custom={i}
+            variants={desktopLinkVariants}
+          >
+            <a
+              href={link.href}
+              className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
             >
-              <a
-                href={link.href}
-                className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-              >
-                {link.label}
-              </a>
-            </motion.li>
-          )
-        )}
+              {link.label}
+            </a>
+          </motion.li>
+        ))}
         <motion.li
           initial="hidden"
           animate="visible"
