@@ -88,10 +88,25 @@ const About = () => {
           <h3 className="text-2xl font-bold text-[#403C5C] mb-2">
             Hi, I&apos;m Jatin!
           </h3>
-          <p className="text-[#403C5C] text-sm sm:text-base md:text-lg leading-relaxed mb-6">
-            I&apos;m a passionate web developer and the sole creator of this website. 
-            I love building intuitive and impactful digital experiences. Check out my work and connect with me below!
-          </p>
+          <motion.p className="text-[#403C5C] font-normal leading-relaxed text-sm sm:text-base md:text-lg mb-4">
+            {`I&apos;m a passionate web developer and the sole creator of this website. I love building intuitive and impactful digital experiences. Check out my work and connect with me below!`.split(
+              " "
+            ).map((word, index) => (
+              <motion.span
+                key={index}
+                initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
+                animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                  delay: 0.02 * index,
+                }}
+                className="inline-block"
+              >
+                {word}&nbsp;
+              </motion.span>
+            ))}
+          </motion.p>
           <motion.a
             href="https://jatin0111.vercel.app/"
             target="_blank"
