@@ -74,9 +74,9 @@ const Carousel = () => {
 
       {/* Carousel Overlay */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center bg-opacity-60 bg-[#403C5C] text-[#D6CFE9] px-6 py-4 rounded">
-        <h1 className="text-3xl font-bold text-[#CBAACB]">EDUSPHERE</h1>
+        <h1 className="text-3xl font-bold text-[#CBAACB]">The UnCoders</h1>
         <p className="mt-4 text-lg text-[#D6CFE9]">
-          Welcome to Edusphere – Where Education Meets Innovation and Your
+          Welcome to The UnCoders – Where Education Meets Innovation and Your
           Learning Journey Begins!
         </p>
         <button className="mt-4 bg-[#D4C1EC] text-[#403C5C] px-4 py-2 rounded font-semibold hover:bg-[#CBAACB] hover:text-white">

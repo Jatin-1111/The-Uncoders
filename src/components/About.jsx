@@ -34,13 +34,13 @@ const About = () => {
       >
         {/* Logo Section */}
         <motion.div
-          className="logo w-full md:w-[40%] flex justify-center"
+          className="logo w-full md:w-[50%] flex justify-center"
           whileHover={logoHover}
         >
           <img
-            src="/images/logo.jpg"
+            src="/images/logo.png"
             alt="Logo"
-            className="rounded-3xl max-w-[300px] md:max-w-full"
+            className="rounded-3xl w-full h-auto max-w-[300px] md:max-w-full  object-contain"
           />
         </motion.div>
 
@@ -53,7 +53,7 @@ const About = () => {
             About Us
           </h2>
           <motion.p className="text-[#403C5C] font-normal leading-relaxed text-sm sm:text-base md:text-lg">
-            {`At EDUSPHERE, we recognize the difficulties IT students encounter in finding reliable study resources. Our platform is committed to offering free, convenient access to lectures, notes, and previous year question papers (PYQ) tailored specifically for IT students at UIET Chandigarh, Panjab University. We aim to support their academic journey by providing quality content that simplifies learning and exam preparation. With EDUSPHERE, students can focus on their studies without worrying about access to essential materials.`
+            {`At The UnCoders, we recognize the difficulties IT students encounter in finding reliable study resources. Our platform is committed to offering free, convenient access to lectures, notes, and previous year question papers (PYQ) tailored specifically for IT students at UIET Chandigarh, Panjab University. We aim to support their academic journey by providing quality content that simplifies learning and exam preparation. With The UnCoders, students can focus on their studies without worrying about access to essential materials.`
               .split(" ")
               .map((word, index) => (
                 <motion.span

@@ -397,9 +397,9 @@ const Contact = () => {
               </h3>
               {[
                 { icon: faMapMarkerAlt, text: "Chandigarh, India" },
-                { icon: faPhone, text: "+91 7909086342" },
-                { icon: faPhone, text: "+91 8173970847" },
-                { icon: faEnvelope, text: "edusphere@gmail.com" },
+                { icon: faPhone, text: "+91 7696316713" },
+                { icon: faPhone, text: "+91 7009244033" },
+                { icon: faEnvelope, text: "theuncoders@gmail.com" },
               ].map((item, index) => (
                 <motion.p
                   key={index}

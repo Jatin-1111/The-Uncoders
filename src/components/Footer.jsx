@@ -46,18 +46,18 @@ const Footer = () => {
       viewport={{ once: true }}
     >
       <div className="max-w-[1200px] mx-auto flex flex-wrap justify-center md:justify-between px-6 gap-10">
-        {/* About Edusphere Section */}
+        {/* About The UnCoders Section */}
         <motion.div
           className="flex-1 min-w-[250px] text-center md:text-left"
           variants={sectionVariants}
         >
           <h2 className="text-xl md:text-2xl font-bold py-4 text-[#CBAACB]">
-            EDUSPHERE
+            The UnCoders
           </h2>
           <p className="text-sm leading-relaxed">
-            Creative learning blends innovative techniques with engaging
-            content, fostering curiosity and deep understanding in educational
-            experiences.
+            Creative learning combines innovative methods with engaging content
+            to spark curiosity and cultivate a deeper understanding in
+            educational experiences.
           </p>
         </motion.div>
 
@@ -67,12 +67,12 @@ const Footer = () => {
           variants={sectionVariants}
         >
           <h2 className="text-xl md:text-2xl font-bold py-4 text-[#CBAACB]">
-            EDUSPHERE Team
+            The UnCoders Team
           </h2>
           <p className="text-sm leading-relaxed">
-            TEAM Edusphere excels in developing innovative educational
-            solutions, combining expertise in technology and design to create
-            impactful, engaging learning experiences.
+            TEAM The UnCoders creates innovative educational solutions that
+            blend technology and design to deliver engaging, impactful learning
+            experiences for student success.
           </p>
         </motion.div>
 
@@ -91,15 +91,15 @@ const Footer = () => {
             </p>
             <p className="text-sm">
               <FontAwesomeIcon icon="phone" className="mr-2" />
-              Call +91 7909086342
+              Call +91 7696316713
             </p>
             <p className="text-sm">
               <FontAwesomeIcon icon="phone" className="mr-2" />
-              Call +91 8173970847
+              Call +91 7009244033
             </p>
             <p className="text-sm">
               <FontAwesomeIcon icon="envelope" className="mr-2" />
-              edusphere@gmail.com
+              theuncoders@gmail.com
             </p>
           </div>
         </motion.div>
@@ -114,9 +114,18 @@ const Footer = () => {
           </h2>
           <div className="flex justify-center gap-4">
             {[
-              { icon: ["fab", "youtube"], link: "https://www.youtube.com/@Edushpher" },
-              { icon: ["fab", "linkedin"], link: "https://www.linkedin.com/company/edushphere/" },
-              { icon: ["fab", "instagram"], link: "https://www.instagram.com/edushpher_1234?igsh=cDdscjMydzB0NW9u" },
+              {
+                icon: ["fab", "youtube"],
+                link: "https://www.youtube.com/@Edushpher",
+              },
+              {
+                icon: ["fab", "linkedin"],
+                link: "https://www.linkedin.com/company/edushphere/",
+              },
+              {
+                icon: ["fab", "instagram"],
+                link: "https://www.instagram.com/edushpher_1234?igsh=cDdscjMydzB0NW9u",
+              },
             ].map((social, i) => (
               <motion.a
                 key={i}

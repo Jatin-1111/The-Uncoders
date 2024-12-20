@@ -108,7 +108,7 @@ const Navbar = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
       >
-        EDUSPHERE
+        The UnCoders
       </motion.a>
 
       {/* Hamburger Icon for Mobile */}
@@ -213,7 +213,7 @@ const Navbar = () => {
               {/* Logo in Menu */}
               <h1 className="text-3xl font-extrabold text-[#D6CFE9] mb-8">
                 <a href="/" onClick={closeMobileMenu}>
-                  EDUSPHERE
+                  The UnCoders
                 </a>
               </h1>
 
