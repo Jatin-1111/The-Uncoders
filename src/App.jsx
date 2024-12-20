@@ -7,6 +7,7 @@ import ITContent from "./components/ITContent";
 import Contact from "./components/Contact";
 import About from "./components/About";
 import Login from "./components/Login";
+import GATEContent from "./components/gateContent";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/Content" element={<Content />} />
         <Route path="/Content/ITContent" element={<ITContent />} />
+        <Route path="/Content/GateContent" element={<GATEContent />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="/About" element={<About />} />
         <Route path="/Login" element={<Login />} />

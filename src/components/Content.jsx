@@ -7,6 +7,9 @@ const Content = () => {
   const handleNavigateToITContent = () => {
     navigate("/Content/ITContent");
   };
+  const handleNavigateTogateContent = () => {
+    navigate("/Content/GateContent");
+  };
 
   // Animation variants
   const pageVariants = {
@@ -48,7 +51,7 @@ const Content = () => {
               onClick={handleNavigateToITContent}
               className="bg-[#D6CFE9] text-[#403C5C] font-bold py-2 px-4 rounded-md hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors"
             >
-              Click Here
+              Access IT Resources
             </button>
           </motion.div>
 
@@ -65,8 +68,10 @@ const Content = () => {
               lectures, expertly crafted notes, and solved PYQs – tailored to
               help you succeed.
             </p>
-            <button className="bg-[#D6CFE9] text-[#403C5C] font-bold py-2 px-4 rounded-md hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors">
-              Click Here
+            <button 
+            onClick={handleNavigateTogateContent}
+            className="bg-[#D6CFE9] text-[#403C5C] font-bold py-2 px-4 rounded-md hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors">
+              Start Your GATE Journey
             </button>
           </motion.div>
 
@@ -84,7 +89,7 @@ const Content = () => {
               academics and practical knowledge.
             </p>
             <button className="bg-[#D6CFE9] text-[#403C5C] font-bold py-2 px-4 rounded-md hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors">
-              Click Here
+              Engage with Seniors Now
             </button>
           </motion.div>
         </div>
