@@ -426,15 +426,15 @@ const Contact = () => {
                 {[
                   {
                     icon: ["fab", "youtube"],
-                    href: "https://www.youtube.com/@Edushpher",
+                    href: "",
                   },
                   {
                     icon: ["fab", "linkedin"],
-                    href: "https://www.linkedin.com/company/edushphere/",
+                    href: "",
                   },
                   {
                     icon: ["fab", "instagram"],
-                    href: "https://www.instagram.com/edushpher_1234?igsh=cDdscjMydzB0NW9u",
+                    href: "",
                   },
                 ].map((social, index) => (
                   <motion.a

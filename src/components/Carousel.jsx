@@ -80,7 +80,7 @@ const Carousel = () => {
           Learning Journey Begins!
         </p>
         <button className="mt-4 bg-[#D4C1EC] text-[#403C5C] px-4 py-2 rounded font-semibold hover:bg-[#CBAACB] hover:text-white">
-          <a href="https://chat.whatsapp.com/GjMlu4QI4d83P4Tc9dwNMA">Join Us</a>
+          <a href="">Join Us</a>
         </button>
       </div>
 

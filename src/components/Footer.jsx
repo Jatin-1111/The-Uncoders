@@ -116,15 +116,15 @@ const Footer = () => {
             {[
               {
                 icon: ["fab", "youtube"],
-                link: "https://www.youtube.com/@Edushpher",
+                link: "",
               },
               {
                 icon: ["fab", "linkedin"],
-                link: "https://www.linkedin.com/company/edushphere/",
+                link: "",
               },
               {
                 icon: ["fab", "instagram"],
-                link: "https://www.instagram.com/edushpher_1234?igsh=cDdscjMydzB0NW9u",
+                link: "",
               },
             ].map((social, i) => (
               <motion.a
