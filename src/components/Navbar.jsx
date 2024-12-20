@@ -22,7 +22,8 @@ const Navbar = () => {
     setMobileMenuVisible(false);
   };
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (e) => {
+    e.stopPropagation();
     setDropdownVisible((prev) => !prev);
   };
 
@@ -53,24 +54,20 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target) &&
-        !dropdownRef.current?.contains(event.target)
-      ) {
-        closeMobileMenu();
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownVisible(false);
+      }
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        closeMobileMenu();
       }
     };
 
-    if (mobileMenuVisible || dropdownVisible) {
-      document.addEventListener("click", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [mobileMenuVisible, dropdownVisible]);
+  }, []);
 
   // Sliding menu variants
   const menuVariants = {
@@ -324,7 +321,6 @@ const Navbar = () => {
                       onClick={handleLogout}
                       className="block w-full text-left hover:text-[#5C6BC0]"
                     >
-                      
                       Logout
                     </button>
                   </motion.div>
@@ -346,3 +342,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
