@@ -1,6 +1,9 @@
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
 import {
   faInstagram,
   faYoutube,
@@ -10,7 +13,15 @@ import {
   faMapMarkerAlt,
   faPhone,
   faEnvelope,
+  faSpinner,
+  faCheckCircle,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/alertVariants";
 
 // Add icons to the FontAwesome library
 library.add(
@@ -19,35 +30,220 @@ library.add(
   faLinkedin,
   faMapMarkerAlt,
   faPhone,
-  faEnvelope
+  faEnvelope,
+  faSpinner,
+  faCheckCircle,
+  faTimesCircle
 );
 
-const Contact = () => {
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
+const NotificationPopup = ({ notification }) => {
+  const popupVariants = {
+    initial: {
+      opacity: 0,
+      y: -50,
+      scale: 0.5,
+      rotateX: 45,
+    },
+    animate: {
       opacity: 1,
       y: 0,
+      scale: 1,
+      rotateX: 0,
       transition: {
-        staggerChildren: 0.2,
-        duration: 0.5,
+        type: "spring",
+        damping: 15,
+        stiffness: 200,
+        duration: 0.6,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      scale: 0.8,
+      transition: {
+        duration: 0.4,
         ease: "easeOut",
       },
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  const iconVariants = {
+    initial: { scale: 0, rotate: -180 },
+    animate: {
+      scale: 1,
+      rotate: 0,
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+      },
+    },
+  };
+
+  const progressVariants = {
+    initial: { scaleX: 1 },
+    animate: {
+      scaleX: 0,
+      transition: {
+        duration: 5,
+        ease: "linear",
+      },
+    },
   };
 
   return (
     <motion.div
-      className="bg-[#FAF4ED] min-h-screen"
+      className="fixed top-4 right-4 z-50 max-w-md"
+      variants={popupVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      layout
+    >
+      <Alert
+        className={`
+          border-2 shadow-lg backdrop-blur-sm
+          ${
+            notification.type === "success"
+              ? "bg-green-50/90 border-green-200 text-green-800"
+              : "bg-red-50/90 border-red-200 text-red-800"
+          }`}
+      >
+        <div className="relative">
+          <div className="flex items-center gap-3">
+            <motion.div
+              variants={iconVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <FontAwesomeIcon
+                icon={
+                  notification.type === "success"
+                    ? faCheckCircle
+                    : faTimesCircle
+                }
+                className={`h-6 w-6 ${
+                  notification.type === "success"
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              />
+            </motion.div>
+            <AlertTitle className="text-lg font-semibold">
+              {notification.type === "success" ? "Success!" : "Error"}
+            </AlertTitle>
+          </div>
+          <AlertDescription className="mt-2 pl-9">
+            {notification.message}
+          </AlertDescription>
+
+          {/* Progress bar */}
+          <motion.div
+            className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
+              notification.type === "success" ? "bg-green-300" : "bg-red-300"
+            }`}
+            variants={progressVariants}
+            initial="initial"
+            animate="animate"
+          />
+        </div>
+      </Alert>
+    </motion.div>
+  );
+};
+
+// PropTypes validation
+NotificationPopup.propTypes = {
+  notification: PropTypes.shape({
+    type: PropTypes.oneOf(["success", "error"]).isRequired,
+    message: PropTypes.string.isRequired,
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+const Contact = () => {
+  const form = useRef();
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
+  const sendEmail = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const result = await emailjs.sendForm(
+        "service_fdfj00e",
+        "template_t9ffswa",
+        form.current,
+        {
+          publicKey: "ibi3P2K95jYRuihAu",
+        }
+      );
+
+      console.log("SUCCESS!", result.text);
+      showNotification("success", "Message sent successfully!");
+      form.current.reset();
+    } catch (error) {
+      console.error("FAILED...", error.text);
+      showNotification("error", "Failed to send message. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const containerVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 25,
+        stiffness: 150,
+        staggerChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      x: -20,
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: "spring",
+        damping: 25,
+        stiffness: 150,
+      },
+    },
+  };
+  return (
+    <motion.div
+      className="bg-[#FAF4ED] min-h-screen relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      {/* Enhanced Notification */}
+      <AnimatePresence mode="wait">
+        {notification && (
+          <NotificationPopup
+            notification={notification}
+            onClose={() => setNotification(null)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Contact Section */}
       <motion.section
         className="py-12 px-4 md:px-20"
@@ -97,6 +293,8 @@ const Contact = () => {
               variants={itemVariants}
             >
               <motion.form
+                ref={form}
+                onSubmit={sendEmail}
                 className="space-y-6"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -164,12 +362,27 @@ const Contact = () => {
                 </motion.div>
                 <motion.button
                   type="submit"
-                  className="w-full py-3 bg-[#D4C1EC] text-[#403C5C] rounded-md font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="w-full py-3 bg-[#D4C1EC] text-[#403C5C] rounded-md font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.95 }}
                   transition={{ duration: 0.2 }}
+                  disabled={isLoading}
                 >
-                  Send Message
+                  <motion.div className="flex items-center justify-center gap-2">
+                    {isLoading && (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faSpinner} />
+                      </motion.div>
+                    )}
+                    {isLoading ? "Sending..." : "Send Message"}
+                  </motion.div>
                 </motion.button>
               </motion.form>
             </motion.div>
@@ -183,22 +396,10 @@ const Contact = () => {
                 Get in Touch
               </h3>
               {[
-                {
-                  icon: faMapMarkerAlt,
-                  text: "Chandigarh, India",
-                },
-                {
-                  icon: faPhone,
-                  text: "+91 7909086342",
-                },
-                {
-                  icon: faPhone,
-                  text: "+91 8173970847",
-                },
-                {
-                  icon: faEnvelope,
-                  text: "edusphere@gmail.com",
-                },
+                { icon: faMapMarkerAlt, text: "Chandigarh, India" },
+                { icon: faPhone, text: "+91 7909086342" },
+                { icon: faPhone, text: "+91 8173970847" },
+                { icon: faEnvelope, text: "edusphere@gmail.com" },
               ].map((item, index) => (
                 <motion.p
                   key={index}
@@ -242,6 +443,8 @@ const Contact = () => {
                     className="w-10 h-10 flex items-center justify-center border-2 border-[#CBAACB] text-[#D6CFE9] bg-[#403C5C] rounded-full hover:bg-[#D4C1EC] hover:text-[#403C5C] transition-all"
                     whileHover={{ scale: 1.2, rotate: 10 }}
                     whileTap={{ scale: 0.9 }}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <FontAwesomeIcon icon={social.icon} />
                   </motion.a>
