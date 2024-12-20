@@ -16,26 +16,26 @@ const About = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  const logoHover = {
-    scale: 1.05,
+  const buttonHover = {
+    scale: 1.1,
     transition: { duration: 0.3, ease: "easeInOut" },
   };
 
   return (
     <motion.div
-      className="bg-[#FAF4ED] font-sans px-4 sm:px-6 md:px-8 lg:px-12 min-h-svh flex"
+      className="bg-[#FAF4ED] font-sans px-4 sm:px-6 md:px-8 lg:px-12 min-h-svh flex flex-col"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       <motion.div
-        className="container flex flex-col md:flex-row justify-center items-center m-auto py-12 gap-8 min-h-[70vh]"
+        className="container flex flex-col md:flex-row justify-center items-center m-auto py-12 gap-8 min-h-[70vh] mt-14"
         variants={itemVariants}
       >
         {/* Logo Section */}
         <motion.div
           className="logo w-full md:w-[50%] flex justify-center"
-          whileHover={logoHover}
+          whileHover={{ scale: 1.05 }}
         >
           <img
             src="/images/logo.png"
@@ -53,25 +53,55 @@ const About = () => {
             About Us
           </h2>
           <motion.p className="text-[#403C5C] font-normal leading-relaxed text-sm sm:text-base md:text-lg">
-            {`At The UnCoders, we recognize the difficulties IT students encounter in finding reliable study resources. Our platform is committed to offering free, convenient access to lectures, notes, and previous year question papers (PYQ) tailored specifically for IT students at UIET Chandigarh, Panjab University. We aim to support their academic journey by providing quality content that simplifies learning and exam preparation. With The UnCoders, students can focus on their studies without worrying about access to essential materials.`
-              .split(" ")
-              .map((word, index) => (
-                <motion.span
-                  key={index}
-                  initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
-                  animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: "easeInOut",
-                    delay: 0.02 * index,
-                  }}
-                  className="inline-block"
-                >
-                  {word}&nbsp;
-                </motion.span>
-              ))}
+            {`At The UnCoders, we recognize the difficulties IT students encounter in finding reliable study resources. Our platform is committed to offering free, convenient access to lectures, notes, and previous year question papers (PYQ) tailored specifically for IT students at UIET Chandigarh, Panjab University. We aim to support their academic journey by providing quality content that simplifies learning and exam preparation. With The UnCoders, students can focus on their studies without worrying about access to essential materials.`.split(
+              " "
+            ).map((word, index) => (
+              <motion.span
+                key={index}
+                initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
+                animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                  delay: 0.02 * index,
+                }}
+                className="inline-block"
+              >
+                {word}&nbsp;
+              </motion.span>
+            ))}
           </motion.p>
         </motion.div>
+      </motion.div>
+
+      {/* Independent Made By Section */}
+      <motion.div
+        className="made-by-section bg-[#F5EFEA] py-12 px-6 mt-10 rounded-lg shadow-md mx-auto max-w-[800px] mb-10"
+        variants={itemVariants}
+      >
+        <div className="text-center">
+          <img
+            src="/images/img.jpg"
+            alt="Your Profile"
+            className="w-32 h-32 rounded-full mx-auto border-4 border-[#403C5C] mb-6 shadow-lg object-cover"
+          />
+          <h3 className="text-2xl font-bold text-[#403C5C] mb-2">
+            Hi, I&apos;m Jatin!
+          </h3>
+          <p className="text-[#403C5C] text-sm sm:text-base md:text-lg leading-relaxed mb-6">
+            I&apos;m a passionate web developer and the sole creator of this website. 
+            I love building intuitive and impactful digital experiences. Check out my work and connect with me below!
+          </p>
+          <motion.a
+            href="https://jatin0111.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-[#403C5C] text-white font-semibold px-6 py-3 rounded-md hover:bg-[#625C82] transition-colors duration-300"
+            whileHover={buttonHover}
+          >
+            Visit My Portfolio
+          </motion.a>
+        </div>
       </motion.div>
     </motion.div>
   );

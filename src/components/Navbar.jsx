@@ -133,16 +133,22 @@ const Navbar = () => {
   };
 
   useEffect(() => {
+    let isInitialAuthCheck = true; // Flag to differentiate between initial load and fresh login
+  
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser && !user) {
-        // User just signed in
-        handleSignInSuccess();
+        if (!isInitialAuthCheck) {
+          // User just signed in
+          handleSignInSuccess();
+        }
       }
+      isInitialAuthCheck = false; // Set to false after the first check
       setUser(currentUser);
     });
+  
     return () => unsubscribe();
   }, [user]);
-
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (

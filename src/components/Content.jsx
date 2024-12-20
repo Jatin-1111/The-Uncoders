@@ -1,13 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { auth } from "../firebase"; // Import your Firebase authentication instance
 
 const Content = () => {
   const navigate = useNavigate();
 
+  // Check if the user is authenticated
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        // Redirect to login if the user is not authenticated
+        navigate("/login", { replace: true });
+      }
+    });
+
+    // Cleanup the subscription on unmount
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleNavigateToITContent = () => {
     navigate("/Content/ITContent");
   };
-  const handleNavigateTogateContent = () => {
+
+  const handleNavigateToGateContent = () => {
     navigate("/Content/GateContent");
   };
 
@@ -68,9 +84,10 @@ const Content = () => {
               lectures, expertly crafted notes, and solved PYQs – tailored to
               help you succeed.
             </p>
-            <button 
-            onClick={handleNavigateTogateContent}
-            className="bg-[#D6CFE9] text-[#403C5C] font-bold py-2 px-4 rounded-md hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors">
+            <button
+              onClick={handleNavigateToGateContent}
+              className="bg-[#D6CFE9] text-[#403C5C] font-bold py-2 px-4 rounded-md hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors"
+            >
               Start Your GATE Journey
             </button>
           </motion.div>
