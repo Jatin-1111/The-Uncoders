@@ -26,7 +26,7 @@ const Content = () => {
       exit="exit"
       variants={pageVariants}
     >
-      <div className="container mx-auto py-16 md:scale-110">
+      <div className="container mx-auto py-16 md:scale-110 mt-5">
         {/* Heading */}
         <div className="text-center text-3xl md:text-5xl font-bold text-[#403C5C]">
           <h2>Content</h2>

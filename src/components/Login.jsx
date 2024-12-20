@@ -1,23 +1,24 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { auth } from "../firebase"; // Import the Firebase auth instance
+import { auth } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState(""); // For Sign-Up only
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the originating page from where the user navigated to login
   const from = location.state?.from || "/";
 
   const toggleMode = () => {
@@ -36,7 +37,7 @@ const Login = () => {
         return;
       }
       await createUserWithEmailAndPassword(auth, email, password);
-      alert("Account created successfully!");
+      toast.success("Account created successfully!");
       toggleMode();
     } catch (err) {
       setError(err.message);
@@ -47,8 +48,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Signed in successfully!");
-      navigate(from); // Redirect to the page user was originally trying to access
+      navigate(from);
     } catch (err) {
       setError(err.message);
     }
@@ -61,7 +61,7 @@ const Login = () => {
     }
     try {
       await sendPasswordResetEmail(auth, email);
-      alert("Password reset email sent!");
+      toast.success("Password reset email sent!");
     } catch (err) {
       setError(err.message);
     }

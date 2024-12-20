@@ -1,21 +1,23 @@
 // Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDqcAh2az92JA1ZieAfd6MusZ-OknEKhoI",
-    authDomain: "edusphere-f784d.firebaseapp.com",
-    projectId: "edusphere-f784d",
-    storageBucket: "edusphere-f784d.firebasestorage.app",
-    messagingSenderId: "356634644028",
-    appId: "1:356634644028:web:0dd240fa6d423486ee3d39",
-    measurementId: "G-9FZVDZS4M4"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
-
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { auth };
+export { app, db, auth, storage };

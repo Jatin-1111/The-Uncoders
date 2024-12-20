@@ -711,7 +711,7 @@ const ITContent = () => {
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
       {/* Header Section */}
-      <div className="flex justify-center items-center flex-col p-8 text-[#403C5C] space-y-5">
+      <div className="flex justify-center items-center flex-col p-8 text-[#403C5C] space-y-5 mt-20">
         <h2 className="text-4xl md:text-5xl font-bold text-center">
           IT Content
         </h2>

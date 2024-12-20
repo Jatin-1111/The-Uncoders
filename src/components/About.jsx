@@ -23,7 +23,7 @@ const About = () => {
 
   return (
     <motion.div
-      className="bg-[#FAF4ED] font-sans px-4 sm:px-6 md:px-8 lg:px-12"
+      className="bg-[#FAF4ED] font-sans px-4 sm:px-6 md:px-8 lg:px-12 min-h-svh flex"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

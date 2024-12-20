@@ -229,7 +229,7 @@ const Contact = () => {
   };
   return (
     <motion.div
-      className="bg-[#FAF4ED] min-h-screen relative"
+      className="bg-[#FAF4ED] min-h-screen relative flex justify-center items-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -251,7 +251,7 @@ const Contact = () => {
         initial="hidden"
         animate="visible"
       >
-        <div className="container mx-auto text-center">
+        <div className="container mx-auto text-center flex flex-col mt-16">
           {/* Title Animation */}
           <motion.h1
             className="text-4xl font-bold text-[#403C5C] mb-4"
@@ -289,7 +289,7 @@ const Contact = () => {
           >
             {/* Contact Form */}
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-md w-full md:w-2/5"
+              className="bg-white p-6 rounded-lg shadow-md w-full md:w-4/5"
               variants={itemVariants}
             >
               <motion.form
@@ -389,7 +389,7 @@ const Contact = () => {
 
             {/* Contact Information */}
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-md w-full md:w-1/3 flex flex-col justify-center"
+              className="bg-white p-6 rounded-lg shadow-md w-full md:w-2/3 flex flex-col justify-center"
               variants={itemVariants}
             >
               <h3 className="text-2xl font-bold text-[#403C5C] mb-4">
