@@ -40,7 +40,7 @@ const About = () => {
           <img
             src="/images/logo.png"
             alt="Logo"
-            className="rounded-3xl w-full h-auto max-w-[300px] md:max-w-[500px]  object-contain shadow-md"
+            className="rounded-3xl w-full h-auto max-w-[300px] md:max-w-[500px]  object-contain shadow-lg"
           />
         </motion.div>
 
