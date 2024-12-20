@@ -52,17 +52,24 @@ const About = () => {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#403C5C] py-4">
             About Us
           </h2>
-          <motion.p
-            className="text-[#403C5C] font-normal leading-relaxed text-sm sm:text-base md:text-lg"
-          >
-            At EDUSPHERE, we recognize the difficulties IT students encounter in
-            finding reliable study resources. Our platform is committed to
-            offering free, convenient access to lectures, notes, and previous
-            year question papers (PYQ) tailored specifically for IT students at
-            UIET Chandigarh, Panjab University. We aim to support their academic
-            journey by providing quality content that simplifies learning and
-            exam preparation. With EDUSPHERE, students can focus on their
-            studies without worrying about access to essential materials.
+          <motion.p className="text-[#403C5C] font-normal leading-relaxed text-sm sm:text-base md:text-lg">
+            {`At EDUSPHERE, we recognize the difficulties IT students encounter in finding reliable study resources. Our platform is committed to offering free, convenient access to lectures, notes, and previous year question papers (PYQ) tailored specifically for IT students at UIET Chandigarh, Panjab University. We aim to support their academic journey by providing quality content that simplifies learning and exam preparation. With EDUSPHERE, students can focus on their studies without worrying about access to essential materials.`
+              .split(" ")
+              .map((word, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
+                  animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.2,
+                    ease: "easeInOut",
+                    delay: 0.02 * index,
+                  }}
+                  className="inline-block"
+                >
+                  {word}&nbsp;
+                </motion.span>
+              ))}
           </motion.p>
         </motion.div>
       </motion.div>

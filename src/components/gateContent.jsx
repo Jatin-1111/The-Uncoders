@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const GATEContent = () => {
   const [showDialog, setShowDialog] = useState(false);
@@ -10,6 +11,11 @@ const GATEContent = () => {
     subject: "",
     chapter: "",
   });
+
+  const navigate = useNavigate();
+  const handleNavigateToITContent = () => {
+    navigate("/Content/ITContent");
+  }
 
   const gateSyllabus = {
     "Engineering Mathematics": {
@@ -423,7 +429,9 @@ const GATEContent = () => {
               question papers (notes) – all available for free to enhance your
               academic journey.
             </p>
-            <button className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] mt-6">
+            <button 
+            onClick={handleNavigateToITContent}
+            className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] mt-6">
               Access IT Resources
             </button>
           </div>

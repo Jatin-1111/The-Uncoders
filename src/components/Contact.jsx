@@ -63,12 +63,28 @@ const Contact = () => {
           >
             Contact Us
           </motion.h1>
+
           <motion.p
             className="text-lg text-[#403C5C] py-4"
             variants={itemVariants}
           >
-            We&apos;d love to hear from you! Get in touch with us using the form
-            below or the contact details provided.
+            {`We'd love to hear from you! Get in touch with us using the form below or the contact details provided.`
+              .split(" ")
+              .map((word, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
+                  animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.2,
+                    ease: "easeInOut",
+                    delay: 0.02 * index,
+                  }}
+                  className="inline-block"
+                >
+                  {word}&nbsp;
+                </motion.span>
+              ))}
           </motion.p>
 
           <motion.div
@@ -207,9 +223,18 @@ const Contact = () => {
               </h3>
               <div className="flex justify-center gap-4">
                 {[
-                  { icon: ["fab", "youtube"], href: "https://www.youtube.com/@Edushpher" },
-                  { icon: ["fab", "linkedin"], href: "https://www.linkedin.com/company/edushphere/" },
-                  { icon: ["fab", "instagram"], href: "https://www.instagram.com/edushpher_1234?igsh=cDdscjMydzB0NW9u" },
+                  {
+                    icon: ["fab", "youtube"],
+                    href: "https://www.youtube.com/@Edushpher",
+                  },
+                  {
+                    icon: ["fab", "linkedin"],
+                    href: "https://www.linkedin.com/company/edushphere/",
+                  },
+                  {
+                    icon: ["fab", "instagram"],
+                    href: "https://www.instagram.com/edushpher_1234?igsh=cDdscjMydzB0NW9u",
+                  },
                 ].map((social, index) => (
                   <motion.a
                     key={index}

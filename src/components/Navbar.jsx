@@ -2,15 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { FaUserCircle } from "react-icons/fa";
+import { HiMenu, HiX } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase"; // Firebase auth instance
+import { auth } from "../firebase";
 
 const Navbar = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
-  const [user, setUser] = useState(null); // Track authenticated user
+  const [user, setUser] = useState(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const menuRef = useRef(null); // Reference for detecting clicks outside
-  const dropdownRef = useRef(null); // Reference for dropdown clicks outside
+  const menuRef = useRef(null);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
@@ -29,7 +30,7 @@ const Navbar = () => {
     try {
       await signOut(auth);
       alert("Logged out successfully!");
-      setUser(null); // Reset user state
+      setUser(null);
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -37,14 +38,12 @@ const Navbar = () => {
 
   const handleContentClick = () => {
     if (!user) {
-      // Redirect to login page with the intent to go to Content
       navigate("/login", { state: { redirectTo: "/Content" } });
     } else {
       navigate("/Content");
     }
   };
 
-  // Monitor Authentication State
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -52,7 +51,6 @@ const Navbar = () => {
     return () => unsubscribe();
   }, []);
 
-  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -74,11 +72,16 @@ const Navbar = () => {
     };
   }, [mobileMenuVisible, dropdownVisible]);
 
-  // Framer Motion variants for the mobile menu
+  // Sliding menu variants
   const menuVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-    exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
+    open: { x: 0, opacity: 1 },
+    closed: { x: "100%", opacity: 0 },
+  };
+
+  const menuTransition = {
+    type: "tween",
+    duration: 0.4,
+    ease: "easeInOut",
   };
 
   const desktopLinkVariants = {
@@ -144,83 +147,109 @@ const Navbar = () => {
         )}
         <button
           onClick={(e) => {
-            e.stopPropagation(); // Prevent click propagation for toggle
+            e.stopPropagation();
             toggleMobileMenu();
           }}
-          className="flex flex-col justify-between w-6 h-5"
+          className="focus:outline-none"
           aria-label="Toggle Menu"
         >
-          <motion.span
-            initial={{ rotate: 0, y: 0 }}
-            animate={{
-              rotate: mobileMenuVisible ? 45 : 0,
-              y: mobileMenuVisible ? 8 : 0,
-            }}
-            className="block w-full h-[2px] bg-[#D6CFE9] transition-all"
-          ></motion.span>
-          <motion.span
-            initial={{ opacity: 1 }}
-            animate={{ opacity: mobileMenuVisible ? 0 : 1 }}
-            className="block w-full h-[2px] bg-[#D6CFE9] transition-opacity"
-          ></motion.span>
-          <motion.span
-            initial={{ rotate: 0, y: 0 }}
-            animate={{
-              rotate: mobileMenuVisible ? -45 : 0,
-              y: mobileMenuVisible ? -8 : 0,
-            }}
-            className="block w-full h-[2px] bg-[#D6CFE9] transition-all"
-          ></motion.span>
+          <AnimatePresence mode="wait">
+            {mobileMenuVisible ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: 180, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <HiX className="text-3xl text-[#D6CFE9] hover:text-[#C2B4E2]" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -180, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <HiMenu className="text-3xl text-[#D6CFE9] hover:text-[#C2B4E2]" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </button>
       </div>
 
-      {/* Mobile Navigation Links */}
+      {/* Mobile Navigation Menu */}
       <AnimatePresence>
         {mobileMenuVisible && (
-          <motion.ul
-            ref={menuRef}
-            className="absolute top-[100px] left-0 w-full bg-[#403C5C] text-center z-40 font-semibold text-lg text-[#D6CFE9] space-y-4 lg:hidden py-6 shadow-lg"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={menuVariants}
-          >
-            {[
-              { label: "Home", href: "/" },
-              { label: "About", href: "/About" },
-              { label: "Content", action: handleContentClick },
-              { label: "Contact", href: "/Contact" },
-            ].map((item, index) => (
-              <motion.li
-                key={item.label}
-                initial="hidden"
-                animate="visible"
-                custom={index}
-                variants={desktopLinkVariants}
-                className="flex justify-center items-center"
+          <>
+            {/* Black Overlay */}
+            <motion.div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={closeMobileMenu}
+            />
+            {/* Sliding Menu */}
+            <motion.div
+              ref={menuRef}
+              className="fixed top-0 right-0 h-full w-64 bg-[#403C5C] shadow-lg z-50 flex flex-col items-center justify-center"
+              variants={menuVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              transition={menuTransition}
+            >
+              {/* Close Button */}
+              <button
+                onClick={closeMobileMenu}
+                className="absolute top-4 right-4 text-[#D6CFE9] focus:outline-none"
               >
-                {item.href ? (
-                  <a
-                    href={item.href}
-                    onClick={closeMobileMenu}
-                    className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                ) : (
-                  <button
-                    onClick={() => {
-                      closeMobileMenu();
-                      item.action();
-                    }}
-                    className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
-                  >
-                    {item.label}
-                  </button>
-                )}
-              </motion.li>
-            ))}
-          </motion.ul>
+                <HiX className="text-3xl hover:text-[#C2B4E2]" />
+              </button>
+
+              {/* Logo in Menu */}
+              <h1 className="text-3xl font-extrabold text-[#D6CFE9] mb-8">
+                <a href="/" onClick={closeMobileMenu}>
+                  EDUSPHERE
+                </a>
+              </h1>
+
+              {/* Menu Items */}
+              <ul className="flex flex-col items-center space-y-6 text-lg font-semibold text-[#D6CFE9]">
+                {[
+                  { label: "Home", href: "/" },
+                  { label: "About", href: "/About" },
+                  { label: "Content", action: handleContentClick },
+                  { label: "Contact", href: "/Contact" },
+                ].map((item) => (
+                  <li key={item.label}>
+                    {item.href ? (
+                      <a
+                        href={item.href}
+                        onClick={closeMobileMenu}
+                        className="hover:text-[#C2B4E2] transition-colors"
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          closeMobileMenu();
+                          item.action();
+                        }}
+                        className="hover:text-[#C2B4E2] transition-colors"
+                      >
+                        {item.label}
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
