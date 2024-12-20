@@ -282,7 +282,7 @@ const Navbar = () => {
         >
           <button
             onClick={handleContentClick}
-            className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+            className="block px-2 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
           >
             Content
           </button>
@@ -295,7 +295,7 @@ const Navbar = () => {
         >
           <a
             href="/Contact"
-            className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+            className="block px-2 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
           >
             Contact
           </a>
@@ -324,6 +324,7 @@ const Navbar = () => {
                       onClick={handleLogout}
                       className="block w-full text-left hover:text-[#5C6BC0]"
                     >
+                      
                       Logout
                     </button>
                   </motion.div>
@@ -333,7 +334,7 @@ const Navbar = () => {
           ) : (
             <a
               href="/Login"
-              className="block px-4 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
+              className="block px-2 text-[#D6CFE9] hover:text-[#C2B4E2] transition-colors"
             >
               Login
             </a>
