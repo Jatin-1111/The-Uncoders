@@ -862,7 +862,7 @@ const ITContent = () => {
             <h4 className="text-2xl font-bold text-[#403C5C] mb-4 text-center">
               GATE Preparation
             </h4>
-            <img src="/images/img4.jpg" alt="Gate IMG" className="rounded-md" />
+            <img src="/images/img4.jpg" alt="Gate IMG" className="rounded-md md:h-[25vh] w-full" />
             <p className="text-[#403C5C] mb-4 py-4">
               Ace your GATE exams with curated IT resources, including video
               lectures, expertly crafted notes, and solved PYQs.
@@ -877,7 +877,7 @@ const ITContent = () => {
             <h4 className="text-2xl font-bold text-[#403C5C] mb-4 text-center">
               Engage with Seniors
             </h4>
-            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md" />
+            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md md:h-[25vh] w-full" />
             <p className="text-[#403C5C] mb-4 py-4">
               Learn from experienced seniors through active engagement,
               mentoring opportunities, and insights that bridge the gap between
