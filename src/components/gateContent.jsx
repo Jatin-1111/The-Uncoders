@@ -423,7 +423,7 @@ const GATEContent = () => {
             <h4 className="text-2xl font-bold text-[#403C5C] mb-4 text-center">
               IT Content
             </h4>
-            <img src="/images/img6.jpeg" alt="IT IMG" className="rounded-md md:h-[55%] md:w-full" />
+            <img src="/images/img6.jpeg" alt="IT IMG" className="rounded-md md:h-[55%] md:w-full shadow-md border border-[#CBAACB] transition-all" />
             <p className="text-[#403C5C] mb-4 py-4">
               Access detailed IT lectures, handwritten notes, and previous year
               question papers (notes) – all available for free to enhance your
@@ -439,13 +439,13 @@ const GATEContent = () => {
             <h4 className="text-2xl font-bold text-[#403C5C] mb-4 text-center">
               Engage with Seniors
             </h4>
-            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md md:h-[55%] md:w-full" />
+            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md md:h-[55%] md:w-full shadow-md border border-[#CBAACB]" />
             <p className="text-[#403C5C] mb-4 py-4">
               Learn from experienced seniors through active engagement,
               mentoring opportunities, and insights that bridge the gap between
               academics and practical knowledge.
             </p>
-            <button className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED]">
+            <button className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] transition-all">
               Engage with Seniors Now
             </button>
           </div>

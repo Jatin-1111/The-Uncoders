@@ -58,7 +58,7 @@ const Content = () => {
             <h4 className="text-[#403C5C] text-lg md:text-xl font-semibold p-3">
               IT Content
             </h4>
-            <img src="/images/img6.jpeg" alt="IT IMG" className="rounded-md md:h-[20vh] md:w-full" />
+            <img src="/images/img6.jpeg" alt="IT IMG" className="rounded-md md:h-[20vh] md:w-full shadow-md border border-[#CBAACB]" />
             <p className="text-[#403C5C] text-sm md:text-base flex-1 p-1 mt-4">
               Access detailed IT lectures, handwritten notes, and previous year
               question papers (PYQs) – all available for free to enhance your
@@ -80,7 +80,7 @@ const Content = () => {
             <h4 className="text-[#403C5C] text-lg md:text-xl font-semibold p-3">
               GATE Preparation
             </h4>
-            <img src="/images/img4.jpg" alt="Gate IMG" className="rounded-md md:h-[20vh]" />
+            <img src="/images/img4.jpg" alt="Gate IMG" className="rounded-md md:h-[20vh] shadow-md border border-[#CBAACB]" />
             <p className="text-[#403C5C] text-sm md:text-base flex-1 p-3 mt-3">
               Ace your GATE exams with curated IT resources, including video
               lectures, expertly crafted notes, and solved PYQs – tailored to
@@ -102,7 +102,7 @@ const Content = () => {
             <h4 className="text-[#403C5C] text-lg md:text-xl font-semibold p-3">
               Engage with Seniors
             </h4>
-            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md md:h-[20vh]" />
+            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md md:h-[20vh] shadow-md border border-[#CBAACB]" />
             <p className="text-[#403C5C] text-sm md:text-base flex-1 p-3 mt-1">
               Learn from experienced seniors through active engagement,
               mentoring opportunities, and insights that bridge the gap between
