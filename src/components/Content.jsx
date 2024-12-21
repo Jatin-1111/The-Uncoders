@@ -52,13 +52,14 @@ const Content = () => {
         <div className="flex flex-col md:flex-row justify-center flex-wrap gap-6 md:gap-10 mt-10 md:mt-16">
           {/* Card 1 */}
           <motion.div
-            className="flex flex-col justify-between h-auto md:h-[30vh] w-full md:w-[20vw] p-5 border border-[#CBAACB] rounded-lg bg-white text-center shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#403C5C]"
+            className="flex flex-col justify-between h-auto w-full md:w-[20vw] p-5 border border-[#CBAACB] rounded-lg bg-white text-center shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#403C5C]"
             whileHover={{ scale: 1.05 }}
           >
             <h4 className="text-[#403C5C] text-lg md:text-xl font-semibold p-3">
-              Comprehensive IT Content
+              IT Content
             </h4>
-            <p className="text-[#403C5C] text-sm md:text-base flex-1 p-1">
+            <img src="/images/img6.jpeg" alt="IT IMG" className="rounded-md md:h-[20vh] md:w-full" />
+            <p className="text-[#403C5C] text-sm md:text-base flex-1 p-1 mt-4">
               Access detailed IT lectures, handwritten notes, and previous year
               question papers (PYQs) – all available for free to enhance your
               academic journey.
@@ -73,13 +74,14 @@ const Content = () => {
 
           {/* Card 2 */}
           <motion.div
-            className="flex flex-col justify-between h-auto md:h-[30vh] w-full md:w-[20vw] p-5 border border-[#CBAACB] rounded-lg bg-white text-center shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#403C5C]"
+            className="flex flex-col justify-between h-auto w-full md:w-[20vw] p-5 border border-[#CBAACB] rounded-lg bg-white text-center shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#403C5C]"
             whileHover={{ scale: 1.05 }}
           >
             <h4 className="text-[#403C5C] text-lg md:text-xl font-semibold p-3">
               GATE Preparation
             </h4>
-            <p className="text-[#403C5C] text-sm md:text-base flex-1 p-3">
+            <img src="/images/img4.jpg" alt="Gate IMG" className="rounded-md md:h-[20vh]" />
+            <p className="text-[#403C5C] text-sm md:text-base flex-1 p-3 mt-3">
               Ace your GATE exams with curated IT resources, including video
               lectures, expertly crafted notes, and solved PYQs – tailored to
               help you succeed.
@@ -94,13 +96,14 @@ const Content = () => {
 
           {/* Card 3 */}
           <motion.div
-            className="flex flex-col justify-between h-auto md:h-[30vh] w-full md:w-[20vw] p-5 border border-[#CBAACB] rounded-lg bg-white text-center shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#403C5C]"
+            className="flex flex-col justify-between h-auto w-full md:w-[20vw] p-5 border border-[#CBAACB] rounded-lg bg-white text-center shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#403C5C]"
             whileHover={{ scale: 1.05 }}
           >
             <h4 className="text-[#403C5C] text-lg md:text-xl font-semibold p-3">
               Engage with Seniors
             </h4>
-            <p className="text-[#403C5C] text-sm md:text-base flex-1 p-3">
+            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md md:h-[20vh]" />
+            <p className="text-[#403C5C] text-sm md:text-base flex-1 p-3 mt-1">
               Learn from experienced seniors through active engagement,
               mentoring opportunities, and insights that bridge the gap between
               academics and practical knowledge.

@@ -423,7 +423,7 @@ const GATEContent = () => {
             <h4 className="text-2xl font-bold text-[#403C5C] mb-4 text-center">
               IT Content
             </h4>
-            <img src="/images/img6.jpeg" alt="Gate IMG" className="rounded-md md:h-[55%] md:w-full" />
+            <img src="/images/img6.jpeg" alt="IT IMG" className="rounded-md md:h-[55%] md:w-full" />
             <p className="text-[#403C5C] mb-4 py-4">
               Access detailed IT lectures, handwritten notes, and previous year
               question papers (notes) – all available for free to enhance your
