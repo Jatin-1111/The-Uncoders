@@ -78,7 +78,7 @@ Toast.propTypes = {
 
 // ToastContainer Component
 const ToastContainer = ({ children }) => (
-  <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+  <div className="fixed top-20 right-4 z-50 flex flex-col gap-2">
     <AnimatePresence>{children}</AnimatePresence>
   </div>
 );
@@ -256,7 +256,7 @@ const Profile = () => {
       exit="exit"
       variants={pageVariants}
     >
-      <div className="container mx-auto max-w-4xl py-8 mt-10">
+      <div className="container mx-auto md:mt-14 max-w-4xl py-8 mt-20">
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-[#403C5C]">
             Welcome back, {name ? name.split(" ")[0] : "User"}!

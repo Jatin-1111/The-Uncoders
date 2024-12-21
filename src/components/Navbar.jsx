@@ -57,7 +57,7 @@ Toast.propTypes = {
 
 // ToastContainer Component
 const ToastContainer = ({ children }) => (
-  <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+  <div className="fixed top-20 right-4 z-50 flex flex-col gap-2">
     <AnimatePresence>{children}</AnimatePresence>
   </div>
 );
@@ -177,14 +177,14 @@ const Navbar = () => {
         className={`fixed top-0 w-full z-40 transition-all duration-300 ${
           isScrolled
             ? "bg-[#FAF4ED] shadow-md"
-            : "bg-gradient-to-b from-[#FAF4ED]/90 to-transparent backdrop-blur-sm"
+            : "bg-gradient-to-b from-[#FAF4ED]/90 to-transparent backdrop-blur-"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <motion.a
               href="/"
-              className="text-2xl font-bold text-[#403C5C] hover:text-[#D4C1EC] transition-colors"
+              className="text-3xl font-bold text-[#403C5C] hover:text-[#9A86CF] transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

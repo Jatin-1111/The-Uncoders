@@ -12,6 +12,7 @@ import Profile from "./components/profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./components/AuthContext";
 import { ToastContainer } from "react-toastify";
+import ResetPassword from "./components/reset-password";
 
 const App = () => {
   return (
@@ -27,7 +28,8 @@ const App = () => {
           <Route path="/Contact" element={<Contact />} />
           <Route path="/About" element={<About />} />
           <Route path="/profile" element={<Profile />} />
-          
+          <Route path="/reset-password" element={<ResetPassword />} />
+
           {/* Protected Routes */}
           <Route
             path="/Content"
