@@ -89,7 +89,7 @@ const About = () => {
             Hi, I&apos;m Jatin!
           </h3>
           <motion.p className="text-[#403C5C] font-normal leading-relaxed text-sm sm:text-base md:text-lg mb-4">
-            {`I&apos;m a passionate web developer and the sole creator of this website. I love building intuitive and impactful digital experiences. Check out my work and connect with me below!`.split(
+            {`I'm a passionate web developer and the sole creator of this website. I love building intuitive and impactful digital experiences. Check out my work and connect with me below!`.split(
               " "
             ).map((word, index) => (
               <motion.span

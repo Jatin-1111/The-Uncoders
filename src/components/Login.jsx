@@ -9,6 +9,9 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+
+const db = getFirestore();
 
 const Login = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
@@ -36,7 +39,16 @@ const Login = () => {
         setError("Name is required for sign-up.");
         return;
       }
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Store the name in Firestore
+      await setDoc(doc(db, "users", user.uid), { name, email });
+
       toast.success("Account created successfully!");
       toggleMode();
     } catch (err) {
