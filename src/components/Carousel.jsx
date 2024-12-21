@@ -51,7 +51,7 @@ const Carousel = () => {
   };
 
   return (
-    <div className="relative overflow-hidden w-full h-[900px] mx-auto">
+    <div className="relative overflow-hidden w-full h-[100vh] mx-auto">
       {/* Carousel Track */}
       <AnimatePresence initial={false} custom={1}>
         <motion.div
