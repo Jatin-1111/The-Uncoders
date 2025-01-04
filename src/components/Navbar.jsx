@@ -13,9 +13,11 @@ import {
   Info,
   FileText,
   Mail,
+  Settings, // Added for admin panel icon
 } from "lucide-react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import PropTypes from "prop-types";
+import { doc, getDoc } from "firebase/firestore";
 
 // Toast Component
 const Toast = ({ message, type, onClose }) => {
@@ -70,6 +72,7 @@ ToastContainer.propTypes = {
 const Navbar = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [toasts, setToasts] = useState([]);
@@ -104,6 +107,55 @@ const Navbar = () => {
     { label: "Contact", href: "/Contact", icon: Mail },
   ];
 
+  const checkAdminStatus = async (user) => {
+    try {
+      if (!user.email) return false;
+
+      const adminDoc = await getDoc(doc(db, "admins", user.uid));
+
+      return !adminDoc.empty; // Returns true if email exists in admin collection
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+      return false;
+    }
+  };
+
+  const getNavItems = () => {
+    if (isAdmin) {
+      return [
+        ...navItems,
+        {
+          label: "Admin Panel",
+          action: () => navigate("/admin-panel69"),
+          icon: Settings,
+        },
+      ];
+    }
+    return navItems;
+  };
+
+  useEffect(() => {
+    let isInitialAuthCheck = true;
+
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        // Check admin status
+        const adminStatus = await checkAdminStatus(currentUser);
+        setIsAdmin(adminStatus);
+
+        if (!user && !isInitialAuthCheck) {
+          handleSignInSuccess();
+        }
+      } else {
+        setIsAdmin(false);
+      }
+      isInitialAuthCheck = false;
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -132,23 +184,6 @@ const Navbar = () => {
     addToast("Signed in successfully!", "success");
   };
 
-  useEffect(() => {
-    let isInitialAuthCheck = true; // Flag to differentiate between initial load and fresh login
-  
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser && !user) {
-        if (!isInitialAuthCheck) {
-          // User just signed in
-          handleSignInSuccess();
-        }
-      }
-      isInitialAuthCheck = false; // Set to false after the first check
-      setUser(currentUser);
-    });
-  
-    return () => unsubscribe();
-  }, [user]);
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -192,7 +227,7 @@ const Navbar = () => {
             </motion.a>
 
             <div className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item, index) => (
+              {getNavItems().map((item, index) => (
                 <motion.div
                   key={item.label}
                   initial={{ opacity: 0, y: -20 }}
@@ -294,7 +329,7 @@ const Navbar = () => {
               className="lg:hidden bg-[#FAF4ED] border-t border-[#CBAACB] shadow-lg"
             >
               <div className="max-w-7xl mx-auto py-4 px-4 space-y-1">
-                {navItems.map((item) => (
+                {getNavItems().map((item) => (
                   <motion.div
                     key={item.label}
                     initial={{ opacity: 0, x: -20 }}

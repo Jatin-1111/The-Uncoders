@@ -2,19 +2,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { auth } from "../firebase";
 import {
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { X, Check } from "lucide-react";
 
-const db = getFirestore();
-
 import PropTypes from "prop-types";
+import { profileService } from "../services/profileService";
 
 // Toast Component
 const Toast = ({ message, type, onClose }) => {
@@ -75,6 +72,7 @@ const Login = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [toasts, setToasts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,35 +98,38 @@ const Login = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+  
     try {
-      if (!name) {
-        setError("Name is required for sign-up.");
-        return;
-      }
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      // Store the name in Firestore
-      await setDoc(doc(db, "users", user.uid), { name, email });
-
-      toast.success("Account created successfully!");
+      // Create authentication user and get the user object directly
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  
+      // Initialize profile using UID as document ID
+      await profileService.initializeProfile(name, email);
+  
+      addToast("Account created successfully!", "success");
       toggleMode();
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate(from);
     } catch (err) {
-      setError(err.message);
+      const errorMessage =
+        err.code === "auth/invalid-credential"
+          ? "This email is not registered. Please sign up instead."
+          : err.message;
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -137,13 +138,12 @@ const Login = () => {
       setError("Please enter your email to reset the password.");
       return;
     }
-  
     try {
       const actionCodeSettings = {
-        url: `${window.location.origin}/reset-password`, // Direct user to reset-password page
-        handleCodeInApp: true, // Ensure the link opens within the app
+        url: `${window.location.origin}/reset-password`,
+        handleCodeInApp: true,
       };
-  
+
       await sendPasswordResetEmail(auth, email, actionCodeSettings);
       addToast("Password reset email sent! Check your inbox.", "success");
     } catch (err) {
@@ -154,7 +154,6 @@ const Login = () => {
       setError(errorMessage);
     }
   };
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-[#ECE4DA] via-[#D6CFE9] to-[#CBAACB]">
@@ -170,7 +169,7 @@ const Login = () => {
           <h1 className="text-3xl font-extrabold text-[#403C5C] mb-6">
             Sign In
           </h1>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <form className="flex flex-col gap-4" onSubmit={handleSignIn}>
             <input
               type="email"
@@ -179,6 +178,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4C1EC]"
               required
+              disabled={isLoading}
             />
             <input
               type="password"
@@ -187,11 +187,13 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4C1EC]"
               required
+              disabled={isLoading}
             />
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-sm text-[#5C6BC0] hover:underline"
+              className="text-sm text-[#5C6BC0] hover:underline disabled:opacity-50"
+              disabled={isLoading}
             >
               Forgot Your Password?
             </button>
@@ -199,9 +201,10 @@ const Login = () => {
               type="submit"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full py-3 bg-[#403C5C] text-white font-semibold rounded-lg hover:bg-[#5C6BC0]"
+              className="w-full py-3 bg-[#403C5C] text-white font-semibold rounded-lg hover:bg-[#5C6BC0] disabled:opacity-50"
+              disabled={isLoading}
             >
-              Sign In
+              {isLoading ? "Signing In..." : "Sign In"}
             </motion.button>
           </form>
         </motion.div>
@@ -217,7 +220,7 @@ const Login = () => {
           <h1 className="text-3xl font-extrabold text-[#403C5C] mb-6">
             Create Account
           </h1>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <form className="flex flex-col gap-4" onSubmit={handleSignUp}>
             <input
               type="text"
@@ -226,6 +229,7 @@ const Login = () => {
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4C1EC]"
               required
+              disabled={isLoading}
             />
             <input
               type="email"
@@ -234,6 +238,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4C1EC]"
               required
+              disabled={isLoading}
             />
             <input
               type="password"
@@ -242,14 +247,16 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4C1EC]"
               required
+              disabled={isLoading}
             />
             <motion.button
               type="submit"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full py-3 bg-[#403C5C] text-white font-semibold rounded-lg hover:bg-[#5C6BC0]"
+              className="w-full py-3 bg-[#403C5C] text-white font-semibold rounded-lg hover:bg-[#5C6BC0] disabled:opacity-50"
+              disabled={isLoading}
             >
-              Sign Up
+              {isLoading ? "Creating Account..." : "Sign Up"}
             </motion.button>
           </form>
         </motion.div>
@@ -282,6 +289,7 @@ const Login = () => {
             whileTap={{ scale: 0.95 }}
             onClick={toggleMode}
             className="mt-6 px-6 py-2 bg-white text-[#403C5C] font-semibold rounded-lg shadow-lg hover:bg-[#ECE4DA]"
+            disabled={isLoading}
           >
             {isSignUpActive ? "Sign In" : "Sign Up"}
           </motion.button>

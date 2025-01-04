@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./components/AuthContext";
 import { ToastContainer } from "react-toastify";
 import ResetPassword from "./components/reset-password";
+import AdminPanel from "./components/Admin-panel";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/About" element={<About />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/admin-panel69" element={<AdminPanel />} />
 
           {/* Protected Routes */}
           <Route
