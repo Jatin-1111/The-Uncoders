@@ -9,7 +9,6 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { X, Check } from "lucide-react";
-
 import PropTypes from "prop-types";
 import { profileService } from "../services/profileService";
 
@@ -99,16 +98,21 @@ const Login = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-  
+
     try {
       // Create authentication user and get the user object directly
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-  
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       // Initialize profile using UID as document ID
       await profileService.initializeProfile(name, email);
-  
+
       addToast("Account created successfully!", "success");
       toggleMode();
+      navigate("/");
     } catch (error) {
       setError(error.message);
     } finally {
