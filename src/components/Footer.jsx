@@ -91,11 +91,11 @@ const Footer = () => {
             </p>
             <p className="text-sm">
               <FontAwesomeIcon icon="phone" className="mr-2" />
-              Call +91 7696316713
+              +91 7696316713
             </p>
             <p className="text-sm">
               <FontAwesomeIcon icon="phone" className="mr-2" />
-              Call +91 7009244033
+              +91 7009244033
             </p>
             <p className="text-sm">
               <FontAwesomeIcon icon="envelope" className="mr-2" />
