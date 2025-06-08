@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { syllabus } from "./DataStructure";
+import { curriculumService } from "../services/curriculumService";
 
 const ITContent = () => {
   const [showDialog, setShowDialog] = useState(false);
@@ -10,17 +10,39 @@ const ITContent = () => {
   const [showPopup2, setShowPopup2] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [popup2Message, setPopup2Message] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [curriculumData, setCurriculumData] = useState({});
   const [formData, setFormData] = useState({
     semester: "",
     subject: "",
     chapter: "",
   });
-  
+
   const navigate = useNavigate();
+
   const handleNavigateTogateContent = () => {
     navigate("/Content/GateContent");
   };
-  
+
+  // Load curriculum data on component mount
+  useEffect(() => {
+    loadCurriculumData();
+  }, []);
+
+  const loadCurriculumData = async () => {
+    try {
+      setLoading(true);
+      const data = await curriculumService.getAllSemesters();
+      setCurriculumData(data);
+    } catch (error) {
+      console.error("Error loading curriculum:", error);
+      setPopupMessage("Failed to load curriculum data. Please try again.");
+      setShowPopup(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => {
       const newData = {
@@ -58,8 +80,7 @@ const ITContent = () => {
     };
   }, []);
 
-  const handleSubmit = () => {
-    setFormData(true);
+  const handleSubmit = async () => {
     const { semester, subject, chapter } = formData;
 
     if (!semester || !subject || !chapter) {
@@ -69,34 +90,56 @@ const ITContent = () => {
       return;
     }
 
-    const subjectData = syllabus[semester]?.[subject];
-    const chapterData = subjectData?.chapters?.[chapter];
+    try {
+      const semesterKey = `semester${semester}`;
+      const chapterData = await curriculumService.getChapters(
+        semesterKey,
+        subject
+      );
+      const selectedChapter = chapterData[chapter];
 
-    if (!chapterData) {
+      if (
+        !selectedChapter ||
+        (!selectedChapter.ytLink &&
+          !selectedChapter.notes &&
+          !selectedChapter.pyqs)
+      ) {
+        setShowPopup(true);
+        setShowDialog(false);
+        setPopupMessage(
+          "We're working hard to bring you content for this selection. Stay tuned for updates!"
+        );
+        return;
+      }
+
+      setSelectedContent({
+        semester,
+        subject,
+        chapter,
+        ...selectedChapter,
+      });
+      setShowDialog(false);
+    } catch (error) {
+      console.error("Error fetching chapter data:", error);
+      setPopupMessage("Error loading content. Please try again.");
       setShowPopup(true);
       setShowDialog(false);
-      setPopupMessage(
-        "We're working hard to bring you content for this selection. Stay tuned for updates!"
-      );
-      return;
     }
-
-    setSelectedContent({
-      semester,
-      subject,
-      chapter,
-      ...chapterData,
-    });
-    setShowDialog(false);
   };
 
   const getAvailableSubjects = (semester) => {
-    return semester ? Object.keys(syllabus[semester] || {}) : [];
+    if (!semester) return [];
+    const semesterKey = `semester${semester}`;
+    const semesterData = curriculumData[semesterKey];
+    return semesterData?.subjects ? Object.keys(semesterData.subjects) : [];
   };
 
   const getAvailableChapters = (semester, subject) => {
-    return semester && subject
-      ? Object.keys(syllabus[semester]?.[subject]?.chapters || {})
+    if (!semester || !subject) return [];
+    const semesterKey = `semester${semester}`;
+    const semesterData = curriculumData[semesterKey];
+    return semesterData?.subjects?.[subject]?.chapters
+      ? Object.keys(semesterData.subjects[subject].chapters)
       : [];
   };
 
@@ -113,7 +156,7 @@ const ITContent = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="bg-white rounded-lg shadow-lg p-8 w-[90vw] md:w-[30vw] ">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-[90vw] md:w-[30vw]">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl md:text-2xl font-bold text-[#403C5C]">
             Select Your Semester, Subject, and Chapter
@@ -124,78 +167,97 @@ const ITContent = () => {
               handleKeyDown();
             }}
             className="text-2xl font-bold text-[#403C5C]"
+            disabled={loading}
           >
             &times;
           </button>
         </div>
-        <div className="space-y-4">
-          {/* Semester Selection */}
-          <div>
-            <label className="block text-[#403C5C] mb-2">
-              Select Semester:
-            </label>
-            <select
-              value={formData.semester}
-              onChange={(e) => handleInputChange("semester", e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              <option value="">Choose a semester</option>
-              {Object.keys(syllabus).map((sem) => (
-                <option key={sem} value={sem}>
-                  Semester {sem}
-                </option>
-              ))}
-            </select>
-          </div>
 
-          {/* Subject Selection */}
-          <div>
-            <label className="block text-[#403C5C] mb-2">Select Subject:</label>
-            <select
-              value={formData.subject}
-              onChange={(e) => handleInputChange("subject", e.target.value)}
-              className="w-full p-2 border rounded"
-              disabled={!formData.semester}
-            >
-              <option value="">Choose a subject</option>
-              {getAvailableSubjects(formData.semester).map((subject) => (
-                <option key={subject} value={subject}>
-                  {subject}
-                </option>
-              ))}
-            </select>
+        {loading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#403C5C]"></div>
+            <span className="ml-3 text-[#403C5C]">Loading curriculum...</span>
           </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Semester Selection */}
+            <div>
+              <label className="block text-[#403C5C] mb-2">
+                Select Semester:
+              </label>
+              <select
+                value={formData.semester}
+                onChange={(e) => handleInputChange("semester", e.target.value)}
+                className="w-full p-2 border rounded"
+                disabled={loading}
+              >
+                <option value="">Choose a semester</option>
+                {Object.keys(curriculumData).map((semesterKey) => {
+                  const semesterNum = semesterKey.replace("semester", "");
+                  return (
+                    <option key={semesterKey} value={semesterNum}>
+                      Semester {semesterNum}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
 
-          {/* Chapter Selection */}
-          <div>
-            <label className="block text-[#403C5C] mb-2">Select Chapter:</label>
-            <select
-              value={formData.chapter}
-              onChange={(e) => handleInputChange("chapter", e.target.value)}
-              className="w-full p-2 border rounded"
-              disabled={!formData.subject}
-            >
-              <option value="">Choose a chapter</option>
-              {getAvailableChapters(formData.semester, formData.subject).map(
-                (chapter) => (
-                  <option key={chapter} value={chapter}>
-                    {chapter}
+            {/* Subject Selection */}
+            <div>
+              <label className="block text-[#403C5C] mb-2">
+                Select Subject:
+              </label>
+              <select
+                value={formData.subject}
+                onChange={(e) => handleInputChange("subject", e.target.value)}
+                className="w-full p-2 border rounded"
+                disabled={!formData.semester || loading}
+              >
+                <option value="">Choose a subject</option>
+                {getAvailableSubjects(formData.semester).map((subject) => (
+                  <option key={subject} value={subject}>
+                    {subject}
                   </option>
-                )
-              )}
-            </select>
-          </div>
+                ))}
+              </select>
+            </div>
 
-          <button
-            onClick={handleSubmit}
-            className="w-full py-3 bg-[#D4C1EC] rounded-md font-bold hover:bg-[#B3C7E6]"
-          >
-            Submit
-          </button>
-        </div>
+            {/* Chapter Selection */}
+            <div>
+              <label className="block text-[#403C5C] mb-2">
+                Select Chapter:
+              </label>
+              <select
+                value={formData.chapter}
+                onChange={(e) => handleInputChange("chapter", e.target.value)}
+                className="w-full p-2 border rounded"
+                disabled={!formData.subject || loading}
+              >
+                <option value="">Choose a chapter</option>
+                {getAvailableChapters(formData.semester, formData.subject).map(
+                  (chapter) => (
+                    <option key={chapter} value={chapter}>
+                      {chapter}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="w-full py-3 bg-[#D4C1EC] rounded-md font-bold hover:bg-[#B3C7E6] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Loading..." : "Submit"}
+            </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );
+
   return (
     <motion.div
       className="min-h-screen bg-[#FAF4ED] flex flex-col"
@@ -210,13 +272,16 @@ const ITContent = () => {
         </h2>
         <button
           onClick={() => setShowDialog(true)}
-          className="px-8 py-4 bg-[#D4C1EC] text-[#403C5C] rounded-md font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] transition-all"
+          disabled={loading}
+          className="px-8 py-4 bg-[#D4C1EC] text-[#403C5C] rounded-md font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Select Semester, Subject, and Chapter
+          {loading
+            ? "Loading Curriculum..."
+            : "Select Semester, Subject, and Chapter"}
         </button>
       </div>
 
-      {/* Dialogs */}
+      {/* Error Popups */}
       <AnimatePresence>
         {showPopup2 && (
           <motion.div
@@ -283,7 +348,6 @@ const ITContent = () => {
             animate="visible"
             exit="exit"
           >
-            {/* Content section remains the same */}
             <div className="text-center mb-8">
               <h3 className="text-2xl md:text-3xl font-bold text-[#403C5C]">
                 Semester {selectedContent.semester} - {selectedContent.subject}{" "}
@@ -355,14 +419,19 @@ const ITContent = () => {
             <h4 className="text-2xl font-bold text-[#403C5C] mb-4 text-center">
               GATE Preparation
             </h4>
-            <img src="/images/img4.jpg" alt="Gate IMG" className="rounded-md md:h-[25vh] w-full shadow-md border border-[#CBAACB]" />
+            <img
+              src="/images/img4.jpg"
+              alt="Gate IMG"
+              className="rounded-md md:h-[25vh] w-full shadow-md border border-[#CBAACB]"
+            />
             <p className="text-[#403C5C] mb-4 py-4">
               Ace your GATE exams with curated IT resources, including video
               lectures, expertly crafted notes, and solved PYQs.
             </p>
             <button
-            onClick={handleNavigateTogateContent} 
-            className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] mt-6 transition-all">
+              onClick={handleNavigateTogateContent}
+              className="w-full px-6 py-2 bg-[#D4C1EC] text-[#403C5C] rounded font-bold hover:bg-[#B3C7E6] hover:text-[#FAF4ED] mt-6 transition-all"
+            >
               Start Your GATE Journey
             </button>
           </div>
@@ -370,7 +439,11 @@ const ITContent = () => {
             <h4 className="text-2xl font-bold text-[#403C5C] mb-4 text-center">
               Engage with Seniors
             </h4>
-            <img src="/images/img5.jpeg" alt="EWS IMG" className="rounded-md md:h-[25vh] w-full shadow-md border border-[#CBAACB]" />
+            <img
+              src="/images/img5.jpeg"
+              alt="EWS IMG"
+              className="rounded-md md:h-[25vh] w-full shadow-md border border-[#CBAACB]"
+            />
             <p className="text-[#403C5C] mb-4 py-4">
               Learn from experienced seniors through active engagement,
               mentoring opportunities, and insights that bridge the gap between

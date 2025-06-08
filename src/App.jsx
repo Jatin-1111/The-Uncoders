@@ -14,6 +14,8 @@ import { AuthProvider } from "./components/AuthContext";
 import { ToastContainer } from "react-toastify";
 import ResetPassword from "./components/reset-password";
 import AdminPanel from "./components/Admin-panel";
+import CurriculumInitializer from "./components/CurriculumInitializer";
+import CurriculumAdminPanel from "./components/CurriculumAdminPanel";
 
 const App = () => {
   return (
@@ -31,7 +33,6 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/admin-panel69" element={<AdminPanel />} />
-
           {/* Protected Routes */}
           <Route
             path="/Content"
@@ -54,6 +55,15 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <GATEContent />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/setup-curriculum" element={<CurriculumInitializer />} />
+          <Route
+            path="/admin-curriculum"
+            element={
+              <ProtectedRoute>
+                <CurriculumAdminPanel />
               </ProtectedRoute>
             }
           />
