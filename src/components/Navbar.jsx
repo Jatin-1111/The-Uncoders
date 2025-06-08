@@ -209,10 +209,10 @@ const Navbar = () => {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed top-0 w-full z-40 transition-all duration-300 ${
+        className={`sticky top-0 w-full z-40 transition-all duration-300 bg-[#FAF4ED] ${
           isScrolled
-            ? "bg-[#FAF4ED] shadow-md"
-            : "bg-gradient-to-b from-[#FAF4ED]/90 to-transparent backdrop-blur-"
+            ? " shadow-md"
+            : "backdrop-blur-0"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
