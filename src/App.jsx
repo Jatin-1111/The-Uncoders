@@ -1,94 +1,109 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
-import Content from "./components/Content";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ITContent from "./components/ITContent";
-import Contact from "./components/Contact";
-import About from "./components/About";
-import Login from "./components/Login";
-import GATEContent from "./components/gateContent";
-import Profile from "./components/profile";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { Suspense, lazy } from "react";
 import { AuthProvider } from "./components/AuthContext";
 import { ToastContainer } from "react-toastify";
-import ResetPassword from "./components/reset-password";
-import AdminPanel from "./components/Admin-panel";
-import CurriculumInitializer from "./components/CurriculumInitializer";
-import CurriculumAdminPanel from "./components/CurriculumAdminPanel";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LoadingSpinner from "./components/LoadingSpinner";
+
+// Lazy load components for better performance
+const Home = lazy(() => import("./components/Home"));
+const Content = lazy(() => import("./components/Content"));
+const ITContent = lazy(() => import("./components/ITContent"));
+const GATEContent = lazy(() => import("./components/gateContent"));
+const Contact = lazy(() => import("./components/Contact"));
+const About = lazy(() => import("./components/About"));
+const Login = lazy(() => import("./components/Login"));
+const Profile = lazy(() => import("./components/profile"));
+const ResetPassword = lazy(() => import("./components/reset-password"));
+const AdminPanel = lazy(() => import("./components/Admin-panel"));
+const CurriculumInitializer = lazy(() => import("./components/CurriculumInitializer"));
+const CurriculumAdminPanel = lazy(() => import("./components/CurriculumAdminPanel"));
+
+// Loading component
+const LoadingFallback = () => (
+  <div className="min-h-screen bg-[#FAF4ED] flex items-center justify-center">
+    <LoadingSpinner />
+  </div>
+);
 
 const App = () => {
   return (
     <AuthProvider>
-      <>
-        {/* Navbar always visible */}
+      <div className="min-h-screen bg-[#FAF4ED] flex flex-col">
+        {/* Fixed Navbar */}
         <Navbar />
 
-        {/* Routes for navigation */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Contact" element={<Contact />} />
-          <Route path="/About" element={<About />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/admin-panel69" element={<AdminPanel />} />
-          {/* Protected Routes */}
-          <Route
-            path="/Content"
-            element={
-              <ProtectedRoute>
-                <Content />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/Content/ITContent"
-            element={
-              <ProtectedRoute>
-                <ITContent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/Content/GateContent"
-            element={
-              <ProtectedRoute>
-                <GATEContent />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/setup-curriculum" element={<CurriculumInitializer />} />
-          <Route
-            path="/admin-curriculum"
-            element={
-              <ProtectedRoute>
-                <CurriculumAdminPanel />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        {/* Main Content Area */}
+        <main className="flex-1">
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin-panel69" element={<AdminPanel />} />
+              <Route path="/setup-curriculum" element={<CurriculumInitializer />} />
+              
+              {/* Protected Routes */}
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/content" element={
+                <ProtectedRoute>
+                  <Content />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/content/it" element={
+                <ProtectedRoute>
+                  <ITContent />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/content/gate" element={
+                <ProtectedRoute>
+                  <GATEContent />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/admin-curriculum" element={
+                <ProtectedRoute>
+                  <CurriculumAdminPanel />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </Suspense>
+        </main>
 
+        {/* Footer */}
+        <Footer />
+
+        {/* Toast Notifications */}
         <ToastContainer
           position="top-right"
           autoClose={3000}
-          hideProgressBar={true}
+          hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
           rtl={false}
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="light" // You can switch to "dark" if needed
-          toastClassName={() =>
-            "relative flex p-3 rounded-lg justify-between overflow-hidden cursor-pointer shadow-lg"
-          }
-          bodyClassName={() => "text-sm font-semibold"}
+          theme="light"
+          className="mt-16"
+          toastClassName="bg-white border border-[#CBAACB] text-[#403C5C] shadow-lg"
+          bodyClassName="text-sm font-medium"
         />
-
-        {/* Footer Component */}
-        <Footer />
-      </>
+      </div>
     </AuthProvider>
   );
 };

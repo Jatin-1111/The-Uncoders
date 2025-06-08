@@ -13,7 +13,7 @@ import {
   Info,
   FileText,
   Mail,
-  Settings, // Added for admin panel icon
+  Settings,
 } from "lucide-react";
 import { auth, db } from "../firebase";
 import PropTypes from "prop-types";
@@ -27,16 +27,13 @@ const Toast = ({ message, type, onClose }) => {
     exit: { opacity: 0, x: 100 },
   };
 
-  const toastStyle =
-    "flex items-center w-80 p-4 rounded-lg border shadow-lg bg-[#FAF4ED] text-[#403C5C] border-[#CBAACB]";
-
   return (
     <motion.div
       variants={variants}
       initial="initial"
       animate="animate"
       exit="exit"
-      className={toastStyle}
+      className="flex items-center w-80 p-4 rounded-lg border shadow-lg bg-[#FAF4ED] text-[#403C5C] border-[#CBAACB]"
     >
       <div className="flex-shrink-0">{type === "success" ? "🚀" : "❌"}</div>
       <div className="ml-3 flex-grow font-medium text-sm">{message}</div>
@@ -50,7 +47,6 @@ const Toast = ({ message, type, onClose }) => {
   );
 };
 
-// Add prop-types validation for Toast
 Toast.propTypes = {
   message: PropTypes.string.isRequired,
   type: PropTypes.oneOf(["success", "error"]).isRequired,
@@ -64,7 +60,6 @@ const ToastContainer = ({ children }) => (
   </div>
 );
 
-// Add prop-types validation for ToastContainer
 ToastContainer.propTypes = {
   children: PropTypes.node.isRequired,
 };
@@ -92,28 +87,26 @@ const Navbar = () => {
 
   const navItems = [
     { label: "Home", href: "/", icon: Home },
-    { label: "About", href: "/About", icon: Info },
+    { label: "About", href: "/about", icon: Info },
     {
       label: "Content",
       action: useCallback(() => {
         if (!user) {
-          navigate("/login", { state: { redirectTo: "/Content" } });
+          navigate("/login", { state: { redirectTo: "/content" } });
         } else {
-          navigate("/Content");
+          navigate("/content");
         }
       }, [user, navigate]),
       icon: FileText,
     },
-    { label: "Contact", href: "/Contact", icon: Mail },
+    { label: "Contact", href: "/contact", icon: Mail },
   ];
 
   const checkAdminStatus = async (user) => {
     try {
       if (!user.email) return false;
-
       const adminDoc = await getDoc(doc(db, "admins", user.uid));
-
-      return !adminDoc.empty; // Returns true if email exists in admin collection
+      return !adminDoc.empty;
     } catch (error) {
       console.error("Error checking admin status:", error);
       return false;
@@ -139,12 +132,11 @@ const Navbar = () => {
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // Check admin status
         const adminStatus = await checkAdminStatus(currentUser);
         setIsAdmin(adminStatus);
 
         if (!user && !isInitialAuthCheck) {
-          handleSignInSuccess();
+          addToast("Welcome back!", "success");
         }
       } else {
         setIsAdmin(false);
@@ -170,18 +162,13 @@ const Navbar = () => {
     auth
       .signOut()
       .then(() => {
-        console.log("Logged out");
         addToast("Successfully logged out!", "success");
-        navigate("/login");
+        navigate("/");
       })
       .catch((error) => {
         console.error("Error logging out:", error);
         addToast("Failed to log out. Please try again!", "error");
       });
-  };
-
-  const handleSignInSuccess = () => {
-    addToast("Signed in successfully!", "success");
   };
 
   useEffect(() => {
@@ -209,24 +196,24 @@ const Navbar = () => {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`sticky top-0 w-full z-40 transition-all duration-300 bg-[#FAF4ED] ${
-          isScrolled
-            ? " shadow-md"
-            : "backdrop-blur-0"
+        className={`fixed top-0 w-full z-40 transition-all duration-300 bg-[#FAF4ED] ${
+          isScrolled ? "shadow-md backdrop-blur-sm" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
+            {/* Logo */}
             <motion.a
               href="/"
-              className="text-3xl font-bold text-[#403C5C] hover:text-[#9A86CF] transition-colors"
+              className="text-2xl md:text-3xl font-bold text-[#403C5C] hover:text-[#9A86CF] transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               The UnCoders
             </motion.a>
 
-            <div className="hidden lg:flex items-center space-x-8">
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-6">
               {getNavItems().map((item, index) => (
                 <motion.div
                   key={item.label}
@@ -237,7 +224,7 @@ const Navbar = () => {
                   {item.href ? (
                     <a
                       href={item.href}
-                      className="flex items-center space-x-2 px-4 py-2 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                      className="flex items-center space-x-2 px-3 py-2 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors text-sm font-medium"
                     >
                       <item.icon className="w-4 h-4" />
                       <span>{item.label}</span>
@@ -245,7 +232,7 @@ const Navbar = () => {
                   ) : (
                     <button
                       onClick={item.action}
-                      className="flex items-center space-x-2 px-4 py-2 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                      className="flex items-center space-x-2 px-3 py-2 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors text-sm font-medium"
                     >
                       <item.icon className="w-4 h-4" />
                       <span>{item.label}</span>
@@ -254,11 +241,12 @@ const Navbar = () => {
                 </motion.div>
               ))}
 
+              {/* User Menu */}
               <div ref={dropdownRef} className="relative">
                 {user ? (
                   <motion.button
                     onClick={toggleDropdown}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -268,7 +256,7 @@ const Navbar = () => {
                 ) : (
                   <motion.a
                     href="/login"
-                    className="flex items-center space-x-2 px-6 py-2 rounded-lg bg-[#D6CFE9] text-[#403C5C] hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors"
+                    className="flex items-center space-x-2 px-6 py-2 rounded-lg bg-[#D6CFE9] text-[#403C5C] hover:bg-[#D4C1EC] hover:text-[#FAF4ED] transition-colors font-medium"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -276,24 +264,26 @@ const Navbar = () => {
                   </motion.a>
                 )}
 
+                {/* Dropdown Menu */}
                 <AnimatePresence>
                   {dropdownVisible && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-48 bg-[#FAF4ED] rounded-lg shadow-lg overflow-hidden border border-[#CBAACB]"
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden border border-[#CBAACB]"
                     >
                       <a
                         href="/profile"
-                        className="flex items-center space-x-2 px-4 py-3 text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                        className="flex items-center space-x-2 px-4 py-3 text-[#403C5C] hover:bg-[#FAF4ED] transition-colors"
+                        onClick={() => setDropdownVisible(false)}
                       >
                         <User className="w-4 h-4" />
                         <span>Profile</span>
                       </a>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center space-x-2 w-full px-4 py-3 text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                        className="flex items-center space-x-2 w-full px-4 py-3 text-[#403C5C] hover:bg-[#FAF4ED] transition-colors"
                       >
                         <LogOut className="w-4 h-4" />
                         <span>Logout</span>
@@ -304,6 +294,7 @@ const Navbar = () => {
               </div>
             </div>
 
+            {/* Mobile Menu Button */}
             <motion.button
               onClick={toggleMobileMenu}
               className="lg:hidden p-2 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9]"
@@ -319,6 +310,7 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Mobile Menu */}
         <AnimatePresence>
           {mobileMenuVisible && (
             <motion.div
@@ -326,7 +318,7 @@ const Navbar = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-[#FAF4ED] border-t border-[#CBAACB] shadow-lg"
+              className="lg:hidden bg-white border-t border-[#CBAACB] shadow-lg"
             >
               <div className="max-w-7xl mx-auto py-4 px-4 space-y-1">
                 {getNavItems().map((item) => (
@@ -339,7 +331,7 @@ const Navbar = () => {
                     {item.href ? (
                       <a
                         href={item.href}
-                        className="flex items-center space-x-2 px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                        className="flex items-center space-x-2 px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#FAF4ED] transition-colors"
                         onClick={closeMobileMenu}
                       >
                         <item.icon className="w-5 h-5" />
@@ -351,7 +343,7 @@ const Navbar = () => {
                           closeMobileMenu();
                           item.action();
                         }}
-                        className="flex items-center space-x-2 w-full px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                        className="flex items-center space-x-2 w-full px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#FAF4ED] transition-colors"
                       >
                         <item.icon className="w-5 h-5" />
                         <span>{item.label}</span>
@@ -364,14 +356,18 @@ const Navbar = () => {
                   <>
                     <a
                       href="/profile"
-                      className="flex items-center space-x-2 px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                      className="flex items-center space-x-2 px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#FAF4ED] transition-colors"
+                      onClick={closeMobileMenu}
                     >
                       <User className="w-5 h-5" />
                       <span>Profile</span>
                     </a>
                     <button
-                      onClick={handleLogout}
-                      className="flex items-center space-x-2 w-full px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#D6CFE9] transition-colors"
+                      onClick={() => {
+                        closeMobileMenu();
+                        handleLogout();
+                      }}
+                      className="flex items-center space-x-2 w-full px-4 py-3 rounded-lg text-[#403C5C] hover:bg-[#FAF4ED] transition-colors"
                     >
                       <LogOut className="w-5 h-5" />
                       <span>Logout</span>
