@@ -6,7 +6,7 @@ import {
   BookOpen,
   ExternalLink,
   Search,
-  AlertCircle,
+  // AlertCircle,
   ArrowLeft,
   Play,
   ArrowRight,
@@ -25,8 +25,8 @@ import LoadingSpinner from "./loadingSpinner";
 const ITContent = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationData, setNotificationData] = useState({});
+  // const [showNotification, setShowNotification] = useState(false);
+  // const [notificationData, setNotificationData] = useState({});
   const [loading, setLoading] = useState(false);
   const [curriculumData, setCurriculumData] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,23 +50,23 @@ const ITContent = () => {
       setCurriculumData(data);
     } catch (error) {
       console.error("Error loading curriculum:", error);
-      showNotificationPopup({
-        type: "error",
-        title: "Loading Failed",
-        message:
-          "Failed to load curriculum data. Please refresh and try again.",
-        icon: XCircle,
-      });
+      // showNotificationPopup({
+      //   type: "error",
+      //   title: "Loading Failed",
+      //   message:
+      //     "Failed to load curriculum data. Please refresh and try again.",
+      //   icon: XCircle,
+      // });
     } finally {
       setLoading(false);
     }
   };
 
-  const showNotificationPopup = (data) => {
-    setNotificationData(data);
-    setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 4000);
-  };
+  // const showNotificationPopup = (data) => {
+  //   setNotificationData(data);
+  //   setShowNotification(true);
+  //   setTimeout(() => setShowNotification(false), 4000);
+  // };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => {
@@ -88,12 +88,12 @@ const ITContent = () => {
     const { semester, subject, chapter } = formData;
 
     if (!semester || !subject || !chapter) {
-      showNotificationPopup({
-        type: "warning",
-        title: "Incomplete Selection",
-        message: "Please select semester, subject, and chapter to continue.",
-        icon: AlertCircle,
-      });
+      // showNotificationPopup({
+      //   type: "warning",
+      //   title: "Incomplete Selection",
+      //   message: "Please select semester, subject, and chapter to continue.",
+      //   icon: AlertCircle,
+      // });
       return;
     }
 
@@ -112,13 +112,13 @@ const ITContent = () => {
           !selectedChapter.notes &&
           !selectedChapter.pyqs)
       ) {
-        showNotificationPopup({
-          type: "info",
-          title: "Content Coming Soon",
-          message:
-            "We're preparing quality content for this topic. Check back soon for updates!",
-          icon: Clock,
-        });
+        // showNotificationPopup({
+        //   type: "info",
+        //   title: "Content Coming Soon",
+        //   message:
+        //     "We're preparing quality content for this topic. Check back soon for updates!",
+        //   icon: Clock,
+        // });
         return;
       }
 
@@ -130,21 +130,21 @@ const ITContent = () => {
       });
       setShowDialog(false);
 
-      showNotificationPopup({
-        type: "success",
-        title: "Content Loaded",
-        message: `Successfully loaded resources for ${chapter}`,
-        icon: CheckCircle,
-      });
+      // showNotificationPopup({
+      //   type: "success",
+      //   title: "Content Loaded",
+      //   message: `Successfully loaded resources for ${chapter}`,
+      //   icon: CheckCircle,
+      // });
     } catch (error) {
       console.error("Error fetching chapter data:", error);
-      showNotificationPopup({
-        type: "error",
-        title: "Loading Error",
-        message:
-          "Unable to load content. Please check your connection and try again.",
-        icon: XCircle,
-      });
+      // showNotificationPopup({
+      //   type: "error",
+      //   title: "Loading Error",
+      //   message:
+      //     "Unable to load content. Please check your connection and try again.",
+      //   icon: XCircle,
+      // });
     } finally {
       setLoading(false);
     }
@@ -206,54 +206,53 @@ const ITContent = () => {
   };
 
   // Enhanced Notification Component
-  const NotificationPopup = () => {
-    const { type, title, message, icon: Icon } = notificationData;
+  // const NotificationPopup = () => {
+  //   const { type, title, message, icon: Icon } = notificationData;
 
-    const typeStyles = {
-      success: "bg-emerald-50 border-emerald-200 text-emerald-800",
-      error: "bg-red-50 border-red-200 text-red-800",
-      warning: "bg-amber-50 border-amber-200 text-amber-800",
-      info: "bg-blue-50 border-blue-200 text-blue-800",
-    };
+  //   const typeStyles = {
+  //     success: "bg-emerald-50 border-emerald-200 text-emerald-800",
+  //     error: "bg-red-50 border-red-200 text-red-800",
+  //     warning: "bg-amber-50 border-amber-200 text-amber-800",
+  //     info: "bg-blue-50 border-blue-200 text-blue-800",
+  //   };
 
-    const iconStyles = {
-      success: "text-emerald-600",
-      error: "text-red-600",
-      warning: "text-amber-600",
-      info: "text-blue-600",
-    };
+  //   const iconStyles = {
+  //     success: "text-emerald-600",
+  //     error: "text-red-600",
+  //     warning: "text-amber-600",
+  //     info: "text-blue-600",
+  //   };
 
-    return (
-      <motion.div
-        className="fixed top-24 right-4 z-50 max-w-sm"
-        initial={{ opacity: 0, x: 100, scale: 0.8 }}
-        animate={{ opacity: 1, x: 0, scale: 1 }}
-        exit={{ opacity: 0, x: 100, scale: 0.8 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      >
-        <div
-          className={`${typeStyles[type]} border-l-4 p-4 rounded-lg shadow-lg backdrop-blur-sm`}
-        >
-          <div className="flex items-start">
-            <Icon className={`w-5 h-5 mt-0.5 mr-3 ${iconStyles[type]}`} />
-            <div className="flex-1">
-              <h4 className="font-semibold text-sm">{title}</h4>
-              <p className="text-sm opacity-90 mt-1">{message}</p>
-            </div>
-            <button
-              onClick={() => setShowNotification(false)}
-              className="ml-2 opacity-60 hover:opacity-100 transition-opacity"
-            >
-              <XCircle className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
+  //   return (
+  //     <motion.div
+  //       className="fixed top-24 right-4 z-50 max-w-sm"
+  //       initial={{ opacity: 0, x: 100, scale: 0.8 }}
+  //       animate={{ opacity: 1, x: 0, scale: 1 }}
+  //       exit={{ opacity: 0, x: 100, scale: 0.8 }}
+  //       transition={{ type: "spring", stiffness: 300, damping: 30 }}
+  //     >
+  //       <div
+  //         className={`${typeStyles[type]} border-l-4 p-4 rounded-lg shadow-lg backdrop-blur-sm`}
+  //       >
+  //         <div className="flex items-start">
+  //           <Icon className={`w-5 h-5 mt-0.5 mr-3 ${iconStyles[type]}`} />
+  //           <div className="flex-1">
+  //             <h4 className="font-semibold text-sm">{title}</h4>
+  //             <p className="text-sm opacity-90 mt-1">{message}</p>
+  //           </div>
+  //           <button
+  //             onClick={() => setShowNotification(false)}
+  //             className="ml-2 opacity-60 hover:opacity-100 transition-opacity"
+  //           >
+  //             <XCircle className="w-4 h-4" />
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </motion.div>
+  //   );
+  // };
 
   // Enhanced Selection Dialog
-  // Enhanced Selection Dialog with bulletproof event handling
   const SelectionDialog = () => {
     const dialogRef = useRef(null);
     const modalRef = useRef(null);
@@ -860,7 +859,7 @@ const ITContent = () => {
       {/* Modals and Notifications */}
       <AnimatePresence>
         {showDialog && <SelectionDialog />}
-        {showNotification && <NotificationPopup />}
+        {/* {showNotification && <NotificationPopup />} */}
       </AnimatePresence>
     </div>
   );

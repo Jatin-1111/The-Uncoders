@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { AuthProvider } from "./components/AuthContext";
-import { ToastContainer } from "react-toastify";
+// import { ToastContainer } from "react-toastify";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -18,8 +18,12 @@ const Login = lazy(() => import("./components/Login"));
 const Profile = lazy(() => import("./components/profile"));
 const ResetPassword = lazy(() => import("./components/reset-password"));
 const AdminPanel = lazy(() => import("./components/Admin-panel"));
-const CurriculumInitializer = lazy(() => import("./components/CurriculumInitializer"));
-const CurriculumAdminPanel = lazy(() => import("./components/CurriculumAdminPanel"));
+const CurriculumInitializer = lazy(() =>
+  import("./components/CurriculumInitializer")
+);
+const CurriculumAdminPanel = lazy(() =>
+  import("./components/CurriculumAdminPanel")
+);
 
 // Loading component
 const LoadingFallback = () => (
@@ -45,41 +49,66 @@ const App = () => {
               <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<About />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              
+
               {/* Admin Routes */}
-              <Route path="/admin-panel69" element={<AdminPanel />} />
-              <Route path="/setup-curriculum" element={<CurriculumInitializer />} />
-              
+              <Route
+                path="/admin-panel69"
+                element={
+                  <ProtectedRoute>
+                    <AdminPanel />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setup-curriculum"
+                element={<CurriculumInitializer />}
+              />
+
               {/* Protected Routes */}
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/content" element={
-                <ProtectedRoute>
-                  <Content />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/content/it" element={
-                <ProtectedRoute>
-                  <ITContent />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/content/gate" element={
-                <ProtectedRoute>
-                  <GATEContent />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/admin-curriculum" element={
-                <ProtectedRoute>
-                  <CurriculumAdminPanel />
-                </ProtectedRoute>
-              } />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/content"
+                element={
+                  <ProtectedRoute>
+                    <Content />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/content/it"
+                element={
+                  <ProtectedRoute>
+                    <ITContent />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/content/gate"
+                element={
+                  <ProtectedRoute>
+                    <GATEContent />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/admin-curriculum"
+                element={
+                  <ProtectedRoute>
+                    <CurriculumAdminPanel />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </Suspense>
         </main>
@@ -88,7 +117,7 @@ const App = () => {
         <Footer />
 
         {/* Toast Notifications */}
-        <ToastContainer
+        {/* <ToastContainer
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}
@@ -102,7 +131,7 @@ const App = () => {
           className="mt-16"
           toastClassName="bg-white border border-[#CBAACB] text-[#403C5C] shadow-lg"
           bodyClassName="text-sm font-medium"
-        />
+        /> */}
       </div>
     </AuthProvider>
   );
