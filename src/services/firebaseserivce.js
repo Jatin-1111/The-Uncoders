@@ -1,4 +1,5 @@
-// firebaseService.js
+// Fixed firebaseService.js - Improved user data loading for admin panel
+
 import { auth, db } from '../firebase';
 import {
   createUserWithEmailAndPassword,
@@ -18,6 +19,7 @@ import {
   where,
   orderBy,
   deleteDoc,
+  limit,
 } from 'firebase/firestore';
 
 // Cache for user data with expiration
@@ -57,21 +59,30 @@ const adminCache = createCache();
 export const authService = {
   // Sign up with validation and Firestore integration
   async signUp(email, password, name) {
-    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-    if (signInMethods.length > 0) {
-      throw new Error('Account already exists');
+    try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (signInMethods.length > 0) {
+        throw new Error('Account already exists');
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Create user document with UID as document ID
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        createdAt: new Date(),
+        lastModified: new Date(),
+      });
+
+      console.log('User created successfully:', user.uid);
+      return user;
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
     }
-
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    await setDoc(doc(db, 'users', user.uid), {
-      name,
-      email,
-      createdAt: new Date(),
-    });
-
-    return user;
   },
 
   // Enhanced sign in with error handling
@@ -100,56 +111,204 @@ export const authService = {
   }
 };
 
-// User Data Service
+// FIXED User Data Service
 export const userService = {
   // Get user data with caching
   async getUserData(uid) {
-    if (!uid) return null;
-
-    const cached = userCache.get(uid);
-    if (cached) {
-      return cached;
+    if (!uid) {
+      console.warn('getUserData called with no UID');
+      return null;
     }
 
-    const userDoc = await getDoc(doc(db, 'users', uid));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      userCache.set(uid, userData);
-      return userData;
+    try {
+      const cached = userCache.get(uid);
+      if (cached) {
+        console.log('Returning cached user data for:', uid);
+        return cached;
+      }
+
+      console.log('Fetching user data from Firestore for:', uid);
+      const userDoc = await getDoc(doc(db, 'users', uid));
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        console.log('User data found:', userData);
+        userCache.set(uid, userData);
+        return userData;
+      } else {
+        console.log('No user document found for:', uid);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw new Error(`Failed to fetch user data: ${error.message}`);
     }
-    return null;
   },
 
   // Update user profile with cache invalidation
   async updateProfile(uid, data) {
-    await setDoc(doc(db, 'users', uid), data, { merge: true });
-    userCache.delete(uid);
+    if (!uid) {
+      throw new Error('User ID is required');
+    }
 
-    if (data.email && auth.currentUser) {
-      await updateEmail(auth.currentUser, data.email);
+    try {
+      const updateData = {
+        ...data,
+        lastModified: new Date()
+      };
+
+      await setDoc(doc(db, 'users', uid), updateData, { merge: true });
+      userCache.delete(uid);
+
+      if (data.email && auth.currentUser) {
+        await updateEmail(auth.currentUser, data.email);
+      }
+
+      console.log('User profile updated successfully:', uid);
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw new Error(`Failed to update profile: ${error.message}`);
     }
   },
 
-  // Get all users with optional filtering
+  // FIXED: Get all users with better error handling and debugging
   async getUsers(searchTerm = '') {
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, orderBy('name'));
-    const snapshot = await getDocs(q);
+    try {
+      console.log('Starting to fetch all users...');
 
-    const users = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+      // Check cache first for all users
+      const cacheKey = `all_users_${searchTerm}`;
+      const cached = userCache.get(cacheKey);
+      if (cached) {
+        console.log('Returning cached users list, count:', cached.length);
+        return cached;
+      }
 
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      return users.filter(user =>
-        user.name?.toLowerCase().includes(term) ||
-        user.email?.toLowerCase().includes(term)
-      );
+      // Query Firestore for all users
+      const usersRef = collection(db, 'users');
+      let q;
+
+      try {
+        // Try to order by name, but handle cases where some documents might not have this field
+        q = query(usersRef, orderBy('name', 'asc'));
+      } catch (orderError) {
+        console.warn('Could not order by name, falling back to basic query:', orderError);
+        q = usersRef;
+      }
+
+      console.log('Executing Firestore query for users...');
+      const snapshot = await getDocs(q);
+      console.log('Firestore query completed. Document count:', snapshot.size);
+
+      if (snapshot.empty) {
+        console.warn('No users found in Firestore collection');
+        return [];
+      }
+
+      const users = [];
+      let errorCount = 0;
+
+      snapshot.forEach(doc => {
+        try {
+          const userData = doc.data();
+
+          // Ensure we have the document ID as uid if not present in data
+          const user = {
+            id: doc.id,
+            uid: userData.uid || doc.id,
+            name: userData.name || 'Unknown User',
+            email: userData.email || 'No Email',
+            createdAt: userData.createdAt,
+            lastModified: userData.lastModified,
+            ...userData
+          };
+
+          users.push(user);
+          console.log('Processed user:', user.id, user.name, user.email);
+        } catch (docError) {
+          console.error('Error processing user document:', doc.id, docError);
+          errorCount++;
+        }
+      });
+
+      console.log(`Successfully processed ${users.length} users, ${errorCount} errors`);
+
+      // Apply search filter if provided
+      let filteredUsers = users;
+      if (searchTerm && searchTerm.trim()) {
+        const term = searchTerm.toLowerCase().trim();
+        filteredUsers = users.filter(user =>
+          (user.name && user.name.toLowerCase().includes(term)) ||
+          (user.email && user.email.toLowerCase().includes(term))
+        );
+        console.log(`Search filtered to ${filteredUsers.length} users`);
+      }
+
+      // Cache the results
+      userCache.set(cacheKey, filteredUsers);
+
+      return filteredUsers;
+
+    } catch (error) {
+      console.error('Error in getUsers:', error);
+
+      // Provide more specific error messages
+      if (error.code === 'permission-denied') {
+        throw new Error('Permission denied: Check Firestore security rules for users collection');
+      } else if (error.code === 'unavailable') {
+        throw new Error('Firestore service unavailable: Check your internet connection');
+      } else if (error.code === 'not-found') {
+        throw new Error('Users collection not found: Check your Firestore database setup');
+      } else {
+        throw new Error(`Failed to fetch users: ${error.message}`);
+      }
     }
+  },
 
-    return users;
+  // Test Firestore connection and collection access
+  async testConnection() {
+    try {
+      console.log('Testing Firestore connection...');
+
+      // Try to read a single document to test connection
+      const usersRef = collection(db, 'users');
+      const testQuery = query(usersRef, limit(1));
+      const snapshot = await getDocs(testQuery);
+
+      console.log('Firestore connection test successful');
+      console.log('Sample document count:', snapshot.size);
+
+      if (snapshot.size > 0) {
+        const sampleDoc = snapshot.docs[0];
+        console.log('Sample document ID:', sampleDoc.id);
+        console.log('Sample document data:', sampleDoc.data());
+      }
+
+      return {
+        success: true,
+        documentCount: snapshot.size,
+        message: 'Firestore connection successful'
+      };
+    } catch (error) {
+      console.error('Firestore connection test failed:', error);
+      return {
+        success: false,
+        error: error.message,
+        code: error.code
+      };
+    }
+  },
+
+  // Get users count without loading all data
+  async getUsersCount() {
+    try {
+      const usersRef = collection(db, 'users');
+      const snapshot = await getDocs(usersRef);
+      return snapshot.size;
+    } catch (error) {
+      console.error('Error getting users count:', error);
+      throw new Error(`Failed to get users count: ${error.message}`);
+    }
   }
 };
 
@@ -166,10 +325,12 @@ export const adminService = {
       // Check cache first
       const cached = adminCache.get(uid);
       if (cached !== null) {
+        console.log(`Admin status from cache for ${uid}: ${cached}`);
         return cached;
       }
 
       // Check Firestore
+      console.log('Checking admin status in Firestore for:', uid);
       const adminDoc = await getDoc(doc(db, 'admins', uid));
       const isAdmin = adminDoc.exists();
 
@@ -189,15 +350,22 @@ export const adminService = {
   // Get all admins with error handling
   async getAdmins() {
     try {
+      console.log('Fetching all admins...');
       const adminsRef = collection(db, 'admins');
       const snapshot = await getDocs(adminsRef);
-      return snapshot.docs.map(doc => ({
+
+      console.log('Admins found:', snapshot.size);
+
+      const admins = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      console.log('Processed admins:', admins);
+      return admins;
     } catch (error) {
       console.error('Error fetching admins:', error);
-      throw new Error('Failed to fetch admin list');
+      throw new Error('Failed to fetch admin list: ' + error.message);
     }
   },
 
@@ -208,8 +376,10 @@ export const adminService = {
     }
 
     const trimmedEmail = email.trim().toLowerCase();
+    console.log('Adding admin for email:', trimmedEmail);
 
     try {
+      // Find user by email
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('email', '==', trimmedEmail));
       const querySnapshot = await getDocs(q);
@@ -218,22 +388,28 @@ export const adminService = {
         throw new Error('User not found with this email address');
       }
 
-      const user = querySnapshot.docs[0];
+      const userDoc = querySnapshot.docs[0];
+      const userId = userDoc.id;
+      console.log('Found user ID:', userId);
 
       // Check if already admin
-      const existingAdmin = await getDoc(doc(db, 'admins', user.id));
+      const existingAdmin = await getDoc(doc(db, 'admins', userId));
       if (existingAdmin.exists()) {
         throw new Error('User is already an admin');
       }
 
-      await setDoc(doc(db, 'admins', user.id), {
+      // Add to admins collection
+      await setDoc(doc(db, 'admins', userId), {
         email: trimmedEmail,
-        addedAt: new Date()
+        addedAt: new Date(),
+        addedBy: auth.currentUser?.uid
       });
 
       // Clear admin cache to force refresh
-      adminCache.delete(user.id);
+      adminCache.delete(userId);
+      adminCache.delete('all_admins');
 
+      console.log('Admin added successfully:', userId);
       return true;
     } catch (error) {
       console.error('Error adding admin:', error);
@@ -248,6 +424,8 @@ export const adminService = {
     }
 
     try {
+      console.log('Removing admin:', adminId);
+
       // Verify admin exists before deletion
       const adminDoc = await getDoc(doc(db, 'admins', adminId));
       if (!adminDoc.exists()) {
@@ -256,7 +434,9 @@ export const adminService = {
 
       await deleteDoc(doc(db, 'admins', adminId));
       adminCache.delete(adminId);
+      adminCache.delete('all_admins');
 
+      console.log('Admin removed successfully:', adminId);
       return true;
     } catch (error) {
       console.error('Error removing admin:', error);
@@ -275,9 +455,15 @@ export const initAuthStateObserver = (callback) => {
   return onAuthStateChanged(auth, async (user) => {
     if (user) {
       try {
+        console.log('Auth state changed - user logged in:', user.uid);
+
         // Get user data from Firestore
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         const userData = userDoc.exists() ? userDoc.data() : null;
+
+        if (!userData) {
+          console.warn('User authenticated but no Firestore document found');
+        }
 
         // Check admin status
         const isAdmin = await adminService.isAdmin(user.uid);
@@ -299,6 +485,7 @@ export const initAuthStateObserver = (callback) => {
         });
       }
     } else {
+      console.log('Auth state changed - user logged out');
       callback({
         user: null,
         userData: null,
@@ -347,6 +534,38 @@ export const checkAuthAndAdmin = async () => {
       authenticated: false,
       isAdmin: false,
       user: null,
+      error: error.message
+    };
+  }
+};
+
+// Debug function to help diagnose issues
+export const debugFirestore = async () => {
+  console.log('=== Firestore Debug Information ===');
+
+  try {
+    // Test basic connection
+    const connectionTest = await userService.testConnection();
+    console.log('Connection test:', connectionTest);
+
+    // Get users count
+    const usersCount = await userService.getUsersCount();
+    console.log('Total users count:', usersCount);
+
+    // Test admin collection
+    const admins = await adminService.getAdmins();
+    console.log('Admins found:', admins.length);
+
+    return {
+      connection: connectionTest,
+      usersCount,
+      adminsCount: admins.length,
+      success: true
+    };
+  } catch (error) {
+    console.error('Debug failed:', error);
+    return {
+      success: false,
       error: error.message
     };
   }

@@ -1,3 +1,5 @@
+// Fixed Admin-panel.jsx - Main fixes for user data loading
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +20,7 @@ import {
   ExternalLink,
   RefreshCw,
   Download,
+  AlertCircle,
 } from "lucide-react";
 import { auth } from "../firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,6 +85,7 @@ const AdminPanel = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
+  const [userDataError, setUserDataError] = useState(null);
 
   // Curriculum Management State
   const [curriculumData, setCurriculumData] = useState({});
@@ -155,11 +159,49 @@ const AdminPanel = () => {
     checkAdminStatus();
   }, [navigate]);
 
-  // Load All Data
+  // Load All Data - FIXED VERSION
   const loadAllData = async () => {
     try {
       setIsLoading(true);
-      await Promise.all([loadUserData(), loadCurriculumData()]);
+      setUserDataError(null);
+
+      // Load data concurrently but handle errors separately
+      const results = await Promise.allSettled([
+        loadUserData(),
+        loadCurriculumData(),
+      ]);
+
+      // Check for user data loading errors
+      if (results[0].status === "rejected") {
+        console.error("User data loading failed:", results[0].reason);
+        setUserDataError(
+          results[0].reason.message || "Failed to load user data"
+        );
+        addToast(
+          "Failed to load user data: " + results[0].reason.message,
+          "error"
+        );
+      }
+
+      // Check for curriculum data loading errors
+      if (results[1].status === "rejected") {
+        console.error("Curriculum data loading failed:", results[1].reason);
+        addToast(
+          "Failed to load curriculum data: " + results[1].reason.message,
+          "error"
+        );
+      }
+
+      // If both failed, show a general error
+      if (
+        results[0].status === "rejected" &&
+        results[1].status === "rejected"
+      ) {
+        addToast(
+          "Failed to load admin panel data. Please refresh the page.",
+          "error"
+        );
+      }
     } catch (err) {
       console.error("Error loading data:", err);
       addToast("Failed to load some data: " + err.message, "error");
@@ -168,18 +210,41 @@ const AdminPanel = () => {
     }
   };
 
-  // User Management Functions
+  // FIXED User Management Functions
   const loadUserData = async () => {
     try {
-      const [usersData, adminsData] = await Promise.all([
+      console.log("Starting to load user data...");
+
+      // Load users and admins separately with better error handling
+      const [usersResult, adminsResult] = await Promise.allSettled([
         userService.getUsers(),
         adminService.getAdmins(),
       ]);
-      setUsers(usersData);
-      setAdmins(adminsData);
+
+      if (usersResult.status === "fulfilled") {
+        console.log("Users loaded successfully:", usersResult.value);
+        setUsers(usersResult.value || []);
+      } else {
+        console.error("Failed to load users:", usersResult.reason);
+        setUsers([]);
+        throw new Error(`Failed to load users: ${usersResult.reason.message}`);
+      }
+
+      if (adminsResult.status === "fulfilled") {
+        console.log("Admins loaded successfully:", adminsResult.value);
+        setAdmins(adminsResult.value || []);
+      } else {
+        console.error("Failed to load admins:", adminsResult.reason);
+        setAdmins([]);
+        // Don't throw here, admins failure shouldn't prevent user display
+        addToast(
+          "Failed to load admin list: " + adminsResult.reason.message,
+          "warning"
+        );
+      }
     } catch (err) {
-      console.error("Error loading user data:", err);
-      throw new Error("Failed to load user data");
+      console.error("Error in loadUserData:", err);
+      throw new Error("Failed to load user data: " + err.message);
     }
   };
 
@@ -191,7 +256,7 @@ const AdminPanel = () => {
 
     try {
       setIsLoading(true);
-      await adminService.addAdmin(newAdminEmail);
+      await adminService.addAdmin(newAdminEmail.trim());
       setNewAdminEmail("");
       setAdminDialogOpen(false);
       await loadUserData();
@@ -220,7 +285,7 @@ const AdminPanel = () => {
     }
   };
 
-  // Curriculum Management Functions
+  // Curriculum Management Functions (unchanged)
   const loadCurriculumData = async () => {
     try {
       const data = await curriculumService.getAllSemesters();
@@ -451,6 +516,24 @@ const AdminPanel = () => {
         {/* User Management Tab */}
         {activeTab === "users" && (
           <div className="space-y-6">
+            {/* Show user data error if exists */}
+            {userDataError && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 text-red-600">
+                    <AlertCircle className="w-5 h-5" />
+                    <span>User Data Error: {userDataError}</span>
+                    <button
+                      onClick={loadUserData}
+                      className="ml-auto px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Admin Management */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
@@ -503,28 +586,42 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {admins.map((admin) => (
-                        <tr key={admin.id} className="border-b border-gray-100">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <Shield className="h-4 w-4 text-purple-500" />
-                              {admin.email}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => removeAdmin(admin.id)}
-                              className="flex items-center gap-2"
-                              disabled={isLoading}
-                            >
-                              <X className="h-4 w-4" />
-                              Remove
-                            </Button>
+                      {admins.length > 0 ? (
+                        admins.map((admin) => (
+                          <tr
+                            key={admin.id}
+                            className="border-b border-gray-100"
+                          >
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-purple-500" />
+                                {admin.email}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeAdmin(admin.id)}
+                                className="flex items-center gap-2"
+                                disabled={isLoading}
+                              >
+                                <X className="h-4 w-4" />
+                                Remove
+                              </Button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan="2"
+                            className="px-4 py-8 text-center text-gray-500"
+                          >
+                            No admins found or failed to load admin data
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -579,39 +676,55 @@ const AdminPanel = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredUsers.map((user) => (
-                          <tr
-                            key={user.id}
-                            className="border-b border-gray-100 hover:bg-gray-50"
-                          >
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                  <span className="text-blue-600 font-medium">
-                                    {user.name?.charAt(0).toUpperCase() || "?"}
+                        {filteredUsers.length > 0 ? (
+                          filteredUsers.map((user) => (
+                            <tr
+                              key={user.id}
+                              className="border-b border-gray-100 hover:bg-gray-50"
+                            >
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <span className="text-blue-600 font-medium">
+                                      {user.name?.charAt(0).toUpperCase() ||
+                                        "?"}
+                                    </span>
+                                  </div>
+                                  <span className="font-medium">
+                                    {user.name || "No Name"}
                                   </span>
                                 </div>
-                                <span className="font-medium">{user.name}</span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-gray-600">
-                              {user.email}
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  admins.some((admin) => admin.id === user.id)
-                                    ? "bg-purple-100 text-purple-700"
-                                    : "bg-gray-100 text-gray-700"
-                                }`}
-                              >
-                                {admins.some((admin) => admin.id === user.id)
-                                  ? "Admin"
-                                  : "User"}
-                              </span>
+                              </td>
+                              <td className="px-4 py-3 text-gray-600">
+                                {user.email || "No Email"}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    admins.some((admin) => admin.id === user.id)
+                                      ? "bg-purple-100 text-purple-700"
+                                      : "bg-gray-100 text-gray-700"
+                                  }`}
+                                >
+                                  {admins.some((admin) => admin.id === user.id)
+                                    ? "Admin"
+                                    : "User"}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="3"
+                              className="px-4 py-8 text-center text-gray-500"
+                            >
+                              {userDataError
+                                ? "Failed to load users - check your Firestore configuration"
+                                : "No users found"}
                             </td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -621,7 +734,7 @@ const AdminPanel = () => {
           </div>
         )}
 
-        {/* Curriculum Management Tab */}
+        {/* Curriculum Management Tab - Keep existing code */}
         {activeTab === "curriculum" && (
           <div className="space-y-6">
             {/* Curriculum Header */}
