@@ -6,7 +6,6 @@ import {
   BookOpen,
   ExternalLink,
   Search,
-  // AlertCircle,
   ArrowLeft,
   Play,
   ArrowRight,
@@ -22,14 +21,62 @@ import {
 } from "lucide-react";
 import LoadingSpinner from "./loadingSpinner";
 
+// Toast Component
+const Toast = ({ message, type, onClose }) => {
+  const variants = {
+    initial: { opacity: 0, x: 100 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 100 },
+  };
+
+  return (
+    <motion.div
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className={`flex items-center w-80 p-4 rounded-lg border shadow-lg ${
+        type === "success"
+          ? "bg-green-50 border-green-200 text-green-800"
+          : type === "error"
+          ? "bg-red-50 border-red-200 text-red-800"
+          : "bg-yellow-50 border-yellow-200 text-yellow-800"
+      }`}
+    >
+      <div className="flex-shrink-0">
+        {type === "success" ? (
+          <CheckCircle className="w-5 h-5" />
+        ) : type === "error" ? (
+          <XCircle className="w-5 h-5" />
+        ) : (
+          "⚠️"
+        )}
+      </div>
+      <div className="ml-3 flex-grow font-medium text-sm">{message}</div>
+      <button
+        onClick={onClose}
+        className="flex-shrink-0 ml-2 text-current opacity-70 hover:opacity-100"
+      >
+        <XCircle className="w-4 h-4" />
+      </button>
+    </motion.div>
+  );
+};
+
+// ToastContainer Component
+const ToastContainer = ({ children }) => (
+  <div className="fixed top-24 right-4 z-50 flex flex-col gap-2">
+    <AnimatePresence>{children}</AnimatePresence>
+  </div>
+);
+
 const ITContent = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
-  // const [showNotification, setShowNotification] = useState(false);
-  // const [notificationData, setNotificationData] = useState({});
   const [loading, setLoading] = useState(false);
   const [curriculumData, setCurriculumData] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [toasts, setToasts] = useState([]);
   const [formData, setFormData] = useState({
     semester: "",
     subject: "",
@@ -37,6 +84,17 @@ const ITContent = () => {
   });
 
   const navigate = useNavigate();
+
+  // Toast management
+  const addToast = (message, type) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => removeToast(id), 4000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  };
 
   // Load curriculum data on component mount
   useEffect(() => {
@@ -50,23 +108,14 @@ const ITContent = () => {
       setCurriculumData(data);
     } catch (error) {
       console.error("Error loading curriculum:", error);
-      // showNotificationPopup({
-      //   type: "error",
-      //   title: "Loading Failed",
-      //   message:
-      //     "Failed to load curriculum data. Please refresh and try again.",
-      //   icon: XCircle,
-      // });
+      addToast(
+        "Failed to load curriculum data. Please refresh and try again.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
   };
-
-  // const showNotificationPopup = (data) => {
-  //   setNotificationData(data);
-  //   setShowNotification(true);
-  //   setTimeout(() => setShowNotification(false), 4000);
-  // };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => {
@@ -88,12 +137,10 @@ const ITContent = () => {
     const { semester, subject, chapter } = formData;
 
     if (!semester || !subject || !chapter) {
-      // showNotificationPopup({
-      //   type: "warning",
-      //   title: "Incomplete Selection",
-      //   message: "Please select semester, subject, and chapter to continue.",
-      //   icon: AlertCircle,
-      // });
+      addToast(
+        "Please select semester, subject, and chapter to continue.",
+        "warning"
+      );
       return;
     }
 
@@ -112,13 +159,10 @@ const ITContent = () => {
           !selectedChapter.notes &&
           !selectedChapter.pyqs)
       ) {
-        // showNotificationPopup({
-        //   type: "info",
-        //   title: "Content Coming Soon",
-        //   message:
-        //     "We're preparing quality content for this topic. Check back soon for updates!",
-        //   icon: Clock,
-        // });
+        addToast(
+          "Content for this topic is coming soon. Check back for updates!",
+          "warning"
+        );
         return;
       }
 
@@ -129,22 +173,13 @@ const ITContent = () => {
         ...selectedChapter,
       });
       setShowDialog(false);
-
-      // showNotificationPopup({
-      //   type: "success",
-      //   title: "Content Loaded",
-      //   message: `Successfully loaded resources for ${chapter}`,
-      //   icon: CheckCircle,
-      // });
+      addToast(`Successfully loaded resources for ${chapter}`, "success");
     } catch (error) {
       console.error("Error fetching chapter data:", error);
-      // showNotificationPopup({
-      //   type: "error",
-      //   title: "Loading Error",
-      //   message:
-      //     "Unable to load content. Please check your connection and try again.",
-      //   icon: XCircle,
-      // });
+      addToast(
+        "Unable to load content. Please check your connection and try again.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -205,57 +240,9 @@ const ITContent = () => {
     },
   };
 
-  // Enhanced Notification Component
-  // const NotificationPopup = () => {
-  //   const { type, title, message, icon: Icon } = notificationData;
-
-  //   const typeStyles = {
-  //     success: "bg-emerald-50 border-emerald-200 text-emerald-800",
-  //     error: "bg-red-50 border-red-200 text-red-800",
-  //     warning: "bg-amber-50 border-amber-200 text-amber-800",
-  //     info: "bg-blue-50 border-blue-200 text-blue-800",
-  //   };
-
-  //   const iconStyles = {
-  //     success: "text-emerald-600",
-  //     error: "text-red-600",
-  //     warning: "text-amber-600",
-  //     info: "text-blue-600",
-  //   };
-
-  //   return (
-  //     <motion.div
-  //       className="fixed top-24 right-4 z-50 max-w-sm"
-  //       initial={{ opacity: 0, x: 100, scale: 0.8 }}
-  //       animate={{ opacity: 1, x: 0, scale: 1 }}
-  //       exit={{ opacity: 0, x: 100, scale: 0.8 }}
-  //       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-  //     >
-  //       <div
-  //         className={`${typeStyles[type]} border-l-4 p-4 rounded-lg shadow-lg backdrop-blur-sm`}
-  //       >
-  //         <div className="flex items-start">
-  //           <Icon className={`w-5 h-5 mt-0.5 mr-3 ${iconStyles[type]}`} />
-  //           <div className="flex-1">
-  //             <h4 className="font-semibold text-sm">{title}</h4>
-  //             <p className="text-sm opacity-90 mt-1">{message}</p>
-  //           </div>
-  //           <button
-  //             onClick={() => setShowNotification(false)}
-  //             className="ml-2 opacity-60 hover:opacity-100 transition-opacity"
-  //           >
-  //             <XCircle className="w-4 h-4" />
-  //           </button>
-  //         </div>
-  //       </div>
-  //     </motion.div>
-  //   );
-  // };
-
   // Enhanced Selection Dialog
   const SelectionDialog = () => {
     const dialogRef = useRef(null);
-    const modalRef = useRef(null);
 
     // Handle ESC key to close modal
     useEffect(() => {
@@ -269,20 +256,17 @@ const ITContent = () => {
       return () => document.removeEventListener("keydown", handleEscape);
     }, []);
 
-    // Backdrop click handler - only closes on direct backdrop clicks
+    // Backdrop click handler
     const handleBackdropClick = (e) => {
-      // Only close if clicking the backdrop itself, not any children
       if (e.target === dialogRef.current) {
         setShowDialog(false);
       }
     };
 
-    // Prevent modal content from closing dialog
     const preventClose = (e) => {
       e.stopPropagation();
     };
 
-    // Explicit close handlers
     const closeDialog = () => {
       setShowDialog(false);
     };
@@ -298,7 +282,6 @@ const ITContent = () => {
         style={{ zIndex: 9999 }}
       >
         <motion.div
-          ref={modalRef}
           className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-100"
           variants={modalVariants}
           initial="hidden"
@@ -856,11 +839,20 @@ const ITContent = () => {
         </AnimatePresence>
       </div>
 
-      {/* Modals and Notifications */}
-      <AnimatePresence>
-        {showDialog && <SelectionDialog />}
-        {/* {showNotification && <NotificationPopup />} */}
-      </AnimatePresence>
+      {/* Modals and Toast Notifications */}
+      <AnimatePresence>{showDialog && <SelectionDialog />}</AnimatePresence>
+
+      {/* Toast Container */}
+      <ToastContainer>
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
+      </ToastContainer>
     </div>
   );
 };
