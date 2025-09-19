@@ -1,4 +1,4 @@
-import Carousel from "./Carousel";
+import Carousel from "../components/common/Carousel";
 import { motion } from "framer-motion";
 
 function Home() {

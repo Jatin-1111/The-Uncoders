@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { auth } from "../firebase"; // Replace with your Firebase configuration
+import { auth } from "../lib/firebase"; // Replace with your Firebase configuration
 
 const AuthContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   return useContext(AuthContext);
 };

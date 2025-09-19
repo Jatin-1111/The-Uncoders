@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import PropTypes from "prop-types";
 
 const LoadingSpinner = ({ size = "default", className = "" }) => {
   const sizes = {
@@ -20,6 +21,11 @@ const LoadingSpinner = ({ size = "default", className = "" }) => {
       />
     </div>
   );
+};
+
+LoadingSpinner.propTypes = {
+  size: PropTypes.oneOf(["small", "default", "large"]),
+  className: PropTypes.string,
 };
 
 export default LoadingSpinner;

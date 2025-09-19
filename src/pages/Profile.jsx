@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Settings, LogOut, X, Loader2 } from "lucide-react";
-import { db, auth } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { initAuthStateObserver } from "../services/firebaseserivce";
@@ -89,7 +88,6 @@ const Profile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [userId, setUserId] = useState("");
   const [memberSince, setMemberSince] = useState("");
   const [toasts, setToasts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -112,26 +110,32 @@ const Profile = () => {
       if (user) {
         setEmail(user.email);
         setNewEmail(user.email);
-        setUserId(user.uid);
         setMemberSince(user.metadata?.creationTime);
-        
+
         if (userData) {
           setName(userData.name || "Guest");
           if (!isInitialized) {
-            addToast("Welcome back, " + (userData.name || "Guest") + "!", "success");
+            addToast(
+              "Welcome back, " + (userData.name || "Guest") + "!",
+              "success"
+            );
             setIsInitialized(true);
           }
         } else {
           console.warn("User document not found in Firestore.");
-          addToast("Profile not fully set up. Please update your information.", "error");
+          addToast(
+            "Profile not fully set up. Please update your information.",
+            "error"
+          );
           setIsInitialized(true);
         }
       } else {
         navigate("/login");
       }
     });
-  
+
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   // const saveToFirestore = async (updatedData) => {

@@ -15,7 +15,7 @@ import {
   Mail,
   Settings,
 } from "lucide-react";
-import { auth, db } from "../firebase";
+import { auth, db } from "../../lib/firebase";
 import PropTypes from "prop-types";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -146,7 +146,8 @@ const Navbar = () => {
     });
 
     return () => unsubscribe();
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);

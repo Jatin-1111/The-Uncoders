@@ -1,5 +1,5 @@
 // src/services/contentService.js
-import { db } from '../firebase';
+import { db } from '../lib/firebase';
 import {
     doc,
     setDoc,
@@ -47,6 +47,7 @@ class ContentService {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 // Remove metadata before caching
+                // eslint-disable-next-line no-unused-vars
                 const { lastModified, version, ...contentData } = data;
                 this.cache.set('main', contentData);
                 return contentData;

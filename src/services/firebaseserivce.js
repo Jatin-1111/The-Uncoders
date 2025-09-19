@@ -1,6 +1,6 @@
 // Fixed firebaseService.js - Improved user data loading for admin panel
 
-import { auth, db } from '../firebase';
+import { auth, db } from '../lib/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,

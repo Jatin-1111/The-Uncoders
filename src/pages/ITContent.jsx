@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth } from "../lib/firebase";
 import { curriculumService } from "../services/curriculumService";
 import {
   BookOpen,
@@ -22,7 +22,7 @@ import {
   BookMarked,
   Target,
 } from "lucide-react";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "../components/common/LoadingSpinner";
 import PropTypes from "prop-types";
 
 // FIXED: Memoized Toast Component to prevent unnecessary re-renders
@@ -788,6 +788,7 @@ const ITContent = () => {
     if (isAuthenticated && !authLoading) {
       loadCurriculumData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, authLoading]);
 
   const loadCurriculumData = useCallback(async () => {

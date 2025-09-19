@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import {
   Users,
   BookOpen,
@@ -22,7 +23,7 @@ import {
   Download,
   AlertCircle,
 } from "lucide-react";
-import { auth } from "../firebase";
+import { auth } from "../lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -69,6 +70,12 @@ const Toast = ({ message, type, onClose }) => {
       </button>
     </motion.div>
   );
+};
+
+Toast.propTypes = {
+  message: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(["success", "error", "warning", "info"]).isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 const AdminPanel = () => {
@@ -157,6 +164,7 @@ const AdminPanel = () => {
     };
 
     checkAdminStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   // Load All Data - FIXED VERSION

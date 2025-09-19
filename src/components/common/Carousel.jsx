@@ -23,6 +23,7 @@ const Carousel = () => {
     }, 10000);
 
     return () => clearInterval(autoSlide);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
 
   const moveToSlide = (index) => {

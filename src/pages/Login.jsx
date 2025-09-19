@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { auth } from "../firebase";
+import { auth } from "../lib/firebase";
 import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -100,12 +100,8 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Create authentication user and get the user object directly
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      // Create authentication user
+      await createUserWithEmailAndPassword(auth, email, password);
 
       // Initialize profile using UID as document ID
       await profileService.initializeProfile(name, email);

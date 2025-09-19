@@ -21,7 +21,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from "@/components/alertVariants";
+} from "@/components/common/AlertVariants";
 
 // Add icons to the FontAwesome library
 library.add(

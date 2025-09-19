@@ -1,5 +1,5 @@
 // profileService.js
-import { db, auth } from '../firebase';
+import { db, auth } from '../lib/firebase';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 // LRU Cache implementation for profile data

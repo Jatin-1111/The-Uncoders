@@ -1,29 +1,23 @@
 import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import { AuthProvider } from "./components/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 // import { ToastContainer } from "react-toastify";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ProtectedRoute from "./components/ProtectedRoute";
-import LoadingSpinner from "./components/LoadingSpinner";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import LoadingSpinner from "./components/common/LoadingSpinner";
 
 // Lazy load components for better performance
-const Home = lazy(() => import("./components/Home"));
-const Content = lazy(() => import("./components/Content"));
-const ITContent = lazy(() => import("./components/ITContent"));
-const GATEContent = lazy(() => import("./components/gateContent"));
-const Contact = lazy(() => import("./components/Contact"));
-const About = lazy(() => import("./components/About"));
-const Login = lazy(() => import("./components/Login"));
-const Profile = lazy(() => import("./components/profile"));
-const ResetPassword = lazy(() => import("./components/reset-password"));
-const AdminPanel = lazy(() => import("./components/Admin-panel"));
-const CurriculumInitializer = lazy(() =>
-  import("./components/CurriculumInitializer")
-);
-const CurriculumAdminPanel = lazy(() =>
-  import("./components/CurriculumAdminPanel")
-);
+const Home = lazy(() => import("./pages/Home"));
+const Content = lazy(() => import("./pages/Content"));
+const ITContent = lazy(() => import("./pages/ITContent"));
+const GATEContent = lazy(() => import("./pages/GateContent"));
+const Contact = lazy(() => import("./pages/Contact"));
+const About = lazy(() => import("./pages/About"));
+const Login = lazy(() => import("./pages/Login"));
+const Profile = lazy(() => import("./pages/Profile"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -59,10 +53,6 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/setup-curriculum"
-                element={<CurriculumInitializer />}
-              />
 
               {/* Protected Routes */}
               <Route
@@ -97,15 +87,6 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <GATEContent />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin-curriculum"
-                element={
-                  <ProtectedRoute>
-                    <CurriculumAdminPanel />
                   </ProtectedRoute>
                 }
               />

@@ -133,6 +133,7 @@ const ResetPassword = () => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => removeToast(id), 3000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const removeToast = React.useCallback((id) => {
@@ -165,6 +166,7 @@ const ResetPassword = () => {
         setError("");
         addToast("Password successfully reset!", "success");
       } catch (error) {
+        console.error("Password reset error:", error);
         setError("Failed to reset password. The link might have expired.");
         addToast("Failed to reset password", "error");
       }

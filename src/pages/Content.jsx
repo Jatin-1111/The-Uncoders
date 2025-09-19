@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
-import { auth } from "../firebase";
+import { auth } from "../lib/firebase";
 import { BookOpen, Users, GraduationCap, ArrowRight } from "lucide-react";
 
 const Content = () => {
